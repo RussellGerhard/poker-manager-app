@@ -4,6 +4,7 @@ import "./css/custom.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
+// Strict mode will invoke render twice
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>

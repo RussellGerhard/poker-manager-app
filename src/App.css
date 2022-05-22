@@ -1,18 +1,28 @@
 /* General changes */
+
+/* Prevent scrollbar from shifting elements left */
 html {
-  min-height: 100%;
+  width: 100vw;
 }
 
+/* Remove link underline */
 a {
   text-decoration: none;
 }
 
+/* Override bootstrap button styling */
+.btn-primary:hover {
+  background-color: aqua;
+}
+
+.btn-primary:active {
+  background-color: #ff3864;
+  transition: none;
+}
+
+/* Utility classes */
 .bg-dark-gr {
-  background-image: linear-gradient(
-    to bottom,
-    rgb(13, 2, 33),
-    rgba(38, 20, 71) 90%
-  );
+  background: linear-gradient(to bottom, #0d0221, rgba(38, 20, 71) 90%);
   background-repeat: no-repeat;
 }
 
@@ -20,19 +30,49 @@ a {
   font-size: 14px;
 }
 
+.txt-xs {
+  font-size: 12px;
+}
+
+.txt-wght-500 {
+  font-weight: 500;
+}
+
 .bd-pink-fuzz {
   box-shadow: 0px 0px 25px #ff3864;
+}
+
+.bd-primary-fuzz {
+  box-shadow: 0px 0px 25px #2de2e6;
+}
+
+.bd-warning-fuzz {
+  box-shadow: 0px 0px 25px #f9c80e;
 }
 
 .bg-pink {
   background-color: #ff3864;
 }
 
-/* Max-width utility class */
-.mw-360px {
-  max-width: 360px;
+/* Min-height utility class */
+.cust-min-height {
+  /* 100vh minus the header height, tightly coupled :( */
+  min-height: calc(100vh - 49px);
+}
+
+/* Max-width utility classes */
+.mw-306px {
+  max-width: 306px;
+}
+
+.w-25px {
+  width: 25px;
 }
 
 .w-150px {
   width: 150px;
+}
+
+.w-100vw {
+  width: 100vw;
 }

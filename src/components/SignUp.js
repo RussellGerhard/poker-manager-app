@@ -1,16 +1,20 @@
-// Bootstrap components
+// Components
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
-// Dev components
 import Logo from "./Logo";
 import Error from "./Error";
-import React from "react";
+import { Navigate } from "react-router-dom";
+// Contexts
+import { AuthContext } from "../contexts/AuthContext";
 // Hooks
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
-function SignUp(props) {
+function SignUp() {
+  // AuthContext for redirecting authenticated users
+  const user = useContext(AuthContext)[0];
+
   // State to keep track of errors
   const [errors, setErrors] = useState([]);
   const [disableSignUp, setDisableSignUp] = useState(false);
@@ -66,12 +70,16 @@ function SignUp(props) {
     setDisableSignUp(false);
   }
 
-  // Render component
+  // Redirect authenticated users and render sign up to unauthenticated users
+  if (user) {
+    return <Navigate to="/" />;
+  }
+
   return (
     <div className="d-flex justify-content-center align-items-center cust-min-height">
       <div className="mw-306px">
         {errorList}
-        <Container className="my-3 p-3 bg-pink bd-pink-fuzz rounded">
+        <Container className="my-3 p-3 bg-secondary bd-pink-fuzz rounded">
           <Logo width="150" />
           <Form onSubmit={registerUser} className="mt-4">
             <Form.Group className="mb-3" controlId="username">

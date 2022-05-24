@@ -20,22 +20,19 @@ a {
   transition: none;
 }
 
+.hover-primary:hover {
+  background-color: #2de2e6;
+}
+
 /* Utility classes */
+/* Background utility */
 .bg-dark-gr {
   background: linear-gradient(to bottom, #0d0221, rgba(38, 20, 71) 90%);
   background-repeat: no-repeat;
 }
 
-.txt-sm {
-  font-size: 14px;
-}
-
-.txt-xs {
-  font-size: 12px;
-}
-
-.txt-wght-500 {
-  font-weight: 500;
+.bg-pink {
+  background-color: #ff3864;
 }
 
 .bd-pink-fuzz {
@@ -50,8 +47,21 @@ a {
   box-shadow: 0px 0px 25px #f9c80e;
 }
 
-.bg-pink {
-  background-color: #ff3864;
+/* Text utility */
+.txt-lg {
+  font-size: 20px;
+}
+
+.txt-sm {
+  font-size: 14px;
+}
+
+.txt-xs {
+  font-size: 12px;
+}
+
+.txt-wght-500 {
+  font-weight: 500;
 }
 
 /* Min-height utility class */
@@ -63,6 +73,10 @@ a {
 /* Max-width utility classes */
 .mw-306px {
   max-width: 306px;
+}
+
+.mw-1200px {
+  max-width: 1200px;
 }
 
 .w-25px {

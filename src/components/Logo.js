@@ -6,7 +6,7 @@ function Logo(props) {
       <img
         src={logo}
         alt="Letter H Logo"
-        className={`d-block w-${props.width}px mx-auto rounded`}
+        className={`d-block w-${props.width}px mw-500px mx-auto rounded`}
       ></img>
     </div>
   );

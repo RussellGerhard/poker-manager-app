@@ -5,15 +5,14 @@ import Form from "react-bootstrap/Form";
 import Logo from "./Logo";
 import Error from "./Error";
 import { Navigate } from "react-router-dom";
-// Contexts
-import { AuthContext } from "../contexts/AuthContext";
 // Hooks
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../contexts/AuthContext";
 
 function SignUp() {
   // AuthContext for redirecting authenticated users
-  const user = useContext(AuthContext)[0];
+  const { user } = useAuthContext();
 
   // State to keep track of errors
   const [errors, setErrors] = useState([]);
@@ -42,7 +41,7 @@ function SignUp() {
     const password_conf = e.target[3].value;
 
     // Send info to backend and await response
-    const response = await fetch("http://localhost:3001/signup", {
+    const response = await fetch("http://localhost:3001/api/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -72,7 +71,7 @@ function SignUp() {
 
   // Redirect authenticated users and render sign up to unauthenticated users
   if (user) {
-    return <Navigate to="/" />;
+    return <Navigate to="/" state={{ alertAuth: true }} />;
   }
 
   return (

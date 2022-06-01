@@ -1,27 +1,52 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useLayoutEffect, useState } from "react";
 
-// Create context
-const AuthContext = createContext();
+// get context
+const AuthContext = createContext(null);
+
+// Extract useContext into custom hook
+const useAuthContext = () => {
+  // get context
+  const context = useContext(AuthContext);
+
+  if (context === null) {
+    throw new Error("useAuthContext was used outside of its Provider");
+  }
+
+  return context;
+};
 
 const AuthContextProvider = ({ children }) => {
   // value for the context
   const [user, setUser] = useState(null);
-  console.log("User Reset from auth provider");
+  const [loading, setLoading] = useState(true);
 
   // get user from local storage
-  useEffect(() => {
-    const user_string = localStorage.getItem("user");
-    if (user_string) {
-      const user_object = JSON.parse(user_string);
-      setUser(user_object);
+  useLayoutEffect(() => {
+    async function loadUser(userId) {
+      const response = await fetch(`http://localhost:3001/api/${userId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const res = await response.json;
+
+      setUser(res.user);
     }
+
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      loadUser(userId);
+    }
+    setLoading(false);
   }, []);
 
   return (
-    <AuthContext.Provider value={[user, setUser]}>
+    <AuthContext.Provider value={{ loading, user, setUser }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export { AuthContext, AuthContextProvider };
+export { useAuthContext, AuthContextProvider };

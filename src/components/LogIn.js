@@ -5,26 +5,24 @@ import Form from "react-bootstrap/Form";
 import Logo from "./Logo";
 import Error from "./Error";
 import { Navigate } from "react-router-dom";
-// Contexts
-import { AuthContext } from "../contexts/AuthContext";
 // Hooks
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState, useContext } from "react";
+import { useState } from "react";
+import { useAuthContext } from "../contexts/AuthContext";
 
 function LogIn() {
   // AuthContext for setting user on login
-  var user = useContext(AuthContext)[0];
-  var setUser = useContext(AuthContext)[1];
+  const { user, setUser } = useAuthContext();
 
   // State for erro.usernames and locking login during a request
   const [errors, setErrors] = useState([]);
   const [disableLogIn, setDisableLogIn] = useState(false);
 
-  // Set up navigation
+  // Set up navigation so we can use hook in submit handler
   const navigate = useNavigate();
 
   // Get state (to display info on redirect)
-  var { state } = useLocation();
+  const { state } = useLocation();
 
   // Display message if user was redirected from sign up
   if (state) {
@@ -63,7 +61,7 @@ function LogIn() {
     const password = e.target[1].value;
 
     // Send info to backend and await response
-    const response = await fetch("http://localhost:3001/login", {
+    const response = await fetch("http://localhost:3001/api/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -86,7 +84,7 @@ function LogIn() {
       return;
     } else {
       // Persist user in broswer storage
-      localStorage.setItem("user", JSON.stringify(res.user));
+      localStorage.setItem("userId", res.user._id);
       // Set user state for AuthContext
       setUser(res.user);
       // Redirect to home with router_state so we can display welcome

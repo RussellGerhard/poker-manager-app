@@ -4,11 +4,9 @@
 import Nav from "react-bootstrap/Nav";
 import Dropdown from "react-bootstrap/Dropdown";
 import Logo from "./Logo";
-// Contexts
-import { AuthContext } from "../contexts/AuthContext";
 // Hooks
-import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../contexts/AuthContext";
 
 function NavigationMenu() {
   // In accordance with react-boostrap md breakpoint
@@ -18,9 +16,7 @@ function NavigationMenu() {
   const navigate = useNavigate();
 
   // Get user context
-  const user = useContext(AuthContext)[0];
-  const setUser = useContext(AuthContext)[1];
-  console.log("Header user:", user);
+  const { user, setUser } = useAuthContext();
 
   // Handle user logout
   async function logUserOut(e) {

@@ -1,17 +1,17 @@
 // Components
 import Container from "react-bootstrap/Container";
+import Button from "react-bootstrap/Button";
+import Loading from "./Loading";
 import { Navigate } from "react-router-dom";
-// Contexts
-import { AuthContext } from "../contexts/AuthContext";
 // Hooks
-import { useContext } from "react";
+import { useAuthContext } from "../contexts/AuthContext";
 import { useLocation } from "react-router-dom";
 
 function Profile() {
   // AuthContext
-  const user = useContext(AuthContext)[0];
-  console.log("Profile user", user);
+  const { loading, user } = useAuthContext();
 
+  // Get prev location state to display info on redirect
   var { state } = useLocation();
 
   // Display welcome message if user was redirected from login
@@ -25,16 +25,38 @@ function Profile() {
     }
   }
 
-  // Render
-  //   if (!user) {
-  //     return <Navigate to="/login" state={{ alertNoAuth: true }} />;
-  //   }
+  // Wait for context provider to load value
+  if (loading) {
+    return <Loading />;
+  }
 
+  if (!user) {
+    return <Navigate to="/login" state={{ alertNoAuth: true }} />;
+  }
+
+  // Render
   return (
     <div className="d-flex justify-content-center align-items-center cust-min-height">
-      <div className="mw-306px">
+      <div className="mw-360px">
         {welcomeMessage}
-        <Container className="my-3 p-3 bg-secondary bd-pink-fuzz rounded"></Container>
+        <h2 className="text-primary text-center">{user.username}'s Account</h2>
+        <div className="responsive-container">
+          <Container className="my-3 p-3 bg-secondary bd-pink-fuzz rounded">
+            <h3 className="text-center">Notifications</h3>
+          </Container>
+          <Container className="my-3 p-3 bg-secondary bd-pink-fuzz rounded">
+            <h3 className="text-center">Account History</h3>
+          </Container>
+          <Container className="my-3 p-3 bg-secondary bd-pink-fuzz rounded">
+            <h3 className="text-center">Manage Account</h3>
+            <Button className="w-100 my-2">Change Username</Button>
+            <Button className="w-100 my-2">Change Password</Button>
+            <Button className="w-100 my-2">Change Email</Button>
+            <Button className="w-100 my-2 btn-warning hover-warning border-0">
+              Delete Account
+            </Button>
+          </Container>
+        </div>
       </div>
     </div>
   );

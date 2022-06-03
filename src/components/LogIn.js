@@ -49,6 +49,9 @@ function LogIn() {
   ));
 
   // Function to handle submit
+
+  // TODO: REWRITE LOGIN CODE
+
   async function logUserIn(e) {
     // Prevent page refresh
     e.preventDefault();
@@ -63,6 +66,7 @@ function LogIn() {
     // Send info to backend and await response
     const response = await fetch("http://localhost:3001/api/login", {
       method: "POST",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
@@ -83,9 +87,6 @@ function LogIn() {
       setErrors(res.errors);
       return;
     } else {
-      // Persist user in broswer storage
-      localStorage.setItem("userId", res.user._id);
-      // Set user state for AuthContext
       setUser(res.user);
       // Redirect to home with router_state so we can display welcome
       // Replace login page in history stack

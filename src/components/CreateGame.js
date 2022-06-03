@@ -2,8 +2,6 @@
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
-import { Navigate } from "react-router-dom";
-import Loading from "./Loading";
 import Error from "./Error";
 // Hooks
 import { useAuthContext } from "../contexts/AuthContext";
@@ -11,27 +9,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function CreateGame() {
-  // AuthContext
-  const { loading, user } = useAuthContext();
+  const { user } = useAuthContext();
 
-  // State for form disable and errors
+  // State
   const [disableCreateGame, setDisableCreateGame] = useState(false);
   const [errors, setErrors] = useState([]);
 
   // Set up navigation
   const navigate = useNavigate();
-
-  // Wait for context provider
-  if (loading) {
-    return <Loading />;
-  }
-
-  // Check for auth
-  if (!user) {
-    return (
-      <Navigate to="/login" state={{ alertNoAuth: true }} replace={true} />
-    );
-  }
 
   // Form errors to display
   const errorList = errors.map((error) => (
@@ -84,11 +69,36 @@ function CreateGame() {
         <Container className="my-3 p-3 w-360px bg-secondary bd-pink-fuzz rounded">
           <h3 className="text-center">Create Game</h3>
           <Form onSubmit={createNewGame} className="mt-4">
-            <Form.Group className="mb-3" controlId="name">
-              <Form.Control type="text" placeholder="Name" />
+            <Form.Group className="mb-2" controlId="name">
+              <Form.Label className="mb-1">Name*</Form.Label>
+              <Form.Control type="text" placeholder="Poker Night" />
             </Form.Group>
+            <Form.Group className="mb-2" controlId="game_type">
+              <Form.Label className="mb-1">Game Type</Form.Label>
+              <Form.Control type="text" placeholder="No Limit Hold'em" />
+            </Form.Group>
+            <Form.Group className="mb-2" controlId="stakes">
+              <Form.Label className="mb-1">Stakes</Form.Label>
+              <Form.Control type="text" placeholder="0.10/0.20" />
+            </Form.Group>
+            <Form.Group className="mb-2" controlId="date">
+              <Form.Label className="mb-1">Date</Form.Label>
+              <Form.Control type="text" placeholder="Every Tuesday" />
+            </Form.Group>
+            <Form.Group className="mb-2" controlId="time">
+              <Form.Label className="mb-1">Start Time</Form.Label>
+              <Form.Control type="text" placeholder="8:00pm" />
+            </Form.Group>
+            <Form.Group className="mb-1" controlId="address">
+              <Form.Label className="mb-1">Address</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="20 W 34th St, New York, NY"
+              />
+            </Form.Group>
+            <div className="mb-2 txt-sm">* indicates a required field</div>
             <Button
-              className="w-100 my-3"
+              className="w-100 mt-2"
               variant="primary"
               type="submit"
               disabled={disableCreateGame}

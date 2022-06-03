@@ -2,7 +2,7 @@
 
 /* Prevent scrollbar from shifting elements left */
 html {
-  width: 100vw;
+  width: 100%;
 }
 
 /* Remove link underline */
@@ -24,8 +24,13 @@ a {
   background-color: #2de2e6;
 }
 
-.hover-warning:hover {
+.btn-warning:hover {
   background-color: #fad340;
+}
+
+.btn-warning:active {
+  background-color: #f9c80e;
+  transition: none;
 }
 
 /* Utility classes */
@@ -68,6 +73,10 @@ a {
   font-weight: 500;
 }
 
+.text-shadow {
+  text-shadow: 1px 1px 1px #0d0221, 2px 2px 2px #0d0221;
+}
+
 /* Min-height utility class */
 .cust-min-height {
   /* 100vh minus the header height, tightly coupled :( */
@@ -75,6 +84,26 @@ a {
 }
 
 /* Max-width utility classes */
+.responsive-container {
+  max-width: 360px;
+}
+
+@media screen and (min-width: 1224px) {
+  .responsive-container {
+    max-width: 1224px;
+  }
+}
+
+.notif-box {
+  max-width: 360px;
+}
+
+@media screen and (min-width: 924px) {
+  .notif-box {
+    max-width: 500px;
+  }
+}
+
 .mw-306px {
   max-width: 306px;
 }
@@ -101,4 +130,8 @@ a {
 
 .w-360px {
   width: 360px;
+}
+
+.w-500px {
+  width: 500px;
 }

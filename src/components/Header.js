@@ -3,6 +3,7 @@
 // Components
 import Nav from "react-bootstrap/Nav";
 import Dropdown from "react-bootstrap/Dropdown";
+import { Link } from "react-router-dom";
 import Logo from "./Logo";
 // Hooks
 import { useNavigate } from "react-router-dom";
@@ -20,9 +21,24 @@ function NavigationMenu() {
 
   // Handle user logout
   async function logUserOut(e) {
+    // Make api call to logout
+    const response = await fetch("http://localhost:3001/api/logout", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const res = await response.json();
+
     // Remove user, clear local storage, and redirect to home
     setUser(null);
-    localStorage.clear();
+
+    if (res.status === "error") {
+      // TODO DISPLAY ERROR MESSAGE
+    }
+
     navigate("/");
   }
 
@@ -30,7 +46,7 @@ function NavigationMenu() {
   return (
     <Nav className="bg-pink bd-pink-fuzz align-items-center">
       <Nav.Item>
-        <Nav.Link href="/">
+        <Nav.Link as={Link} to="/">
           <div className="d-flex">
             <div className="mx-1">
               <Logo width="25" />
@@ -48,10 +64,10 @@ function NavigationMenu() {
               {user.username}
             </Dropdown.Toggle>
             <Dropdown.Menu className="bg-secondary bd-pink-fuzz">
-              <Dropdown.Item className="hover-primary" href="profile">
+              <Dropdown.Item as={Link} to="profile" className="hover-primary">
                 Profile
               </Dropdown.Item>
-              <Dropdown.Item className="hover-primary" href="games">
+              <Dropdown.Item as={Link} to="games" className="hover-primary">
                 Games
               </Dropdown.Item>
               <hr></hr>

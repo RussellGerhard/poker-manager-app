@@ -1,4 +1,4 @@
-import { createContext, useContext, useLayoutEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useMemo } from "react";
 
 // get context
 const AuthContext = createContext(null);
@@ -20,30 +20,33 @@ const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // get user from local storage
-  useLayoutEffect(() => {
-    async function loadUser(userId) {
-      const response = await fetch(`http://localhost:3001/api/${userId}`, {
+  // Memoize user
+  const providerValue = useMemo(() => ({ user, setUser }), [user, setUser]);
+  providerValue.loading = loading;
+
+  // get user with API call
+  useEffect(() => {
+    async function loadUser() {
+      const response = await fetch(`http://localhost:3001/api/login`, {
         method: "GET",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
       });
+      const res = await response.json();
 
-      const res = await response.json;
-
-      setUser(res.user);
+      if (res.loggedIn) {
+        setUser(res.user);
+      }
     }
 
-    const userId = localStorage.getItem("userId");
-    if (userId) {
-      loadUser(userId);
-    }
+    loadUser();
     setLoading(false);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ loading, user, setUser }}>
+    <AuthContext.Provider value={providerValue}>
       {children}
     </AuthContext.Provider>
   );

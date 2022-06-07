@@ -1,32 +1,101 @@
+// Imports
+import he from "he";
 // Components
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/esm/Container";
 import ListItem from "./ListItem";
 // Hooks
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 function Game() {
-  // Dummy vars from api req
-  const admin_test = true;
+  // State
+  const [game, setGame] = useState(null);
+  const [isAdmin, setIsAdmin] = useState([]);
+
+  // Constants
+  const navigate = useNavigate();
+  const params = useParams();
+
+  // Effects
+  useEffect(() => {
+    // Fetch game object
+    async function fetchGame() {
+      const result = await fetch(
+        `http://localhost:3001/api/games/${params.gameId}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+      const res = await result.json();
+
+      setGame(res.game);
+      setIsAdmin(res.isAdmin);
+    }
+
+    fetchGame();
+  }, []);
+
+  // Functions
+  function navEditGame() {
+    navigate("/edit_game", { state: { game: game } });
+  }
+
+  function navAddMember() {
+    navigate("/add_member", { state: { game: game } });
+  }
+
+  // JSX
+  const memberList = game
+    ? game.members.map((member) => {
+        const profit = parseInt(game.member_profit_map[member._id]);
+        var profit_color;
+        if (profit > 0) {
+          profit_color = "green";
+        } else if (profit < 0) {
+          profit_color = "red";
+        } else {
+          profit_color = "white";
+        }
+        return (
+          <ListItem
+            key={member._id}
+            label={member.username}
+            text={`$${profit}`}
+            textColor={profit_color}
+            action={isAdmin ? "Kick" : ""}
+            actionTo={isAdmin ? "/" : ""}
+            actionState={{}}
+          />
+        );
+      })
+    : "";
 
   // Render
   return (
     <div className="d-flex justify-content-center align-items-center cust-min-height">
       <div>
-        <h1 className="mt-4 text-primary text-center">My Game</h1>
+        <h1 className="mt-4 text-primary text-center">
+          {game ? game.name : ""}
+        </h1>
         <div className="responsive-container d-flex flex-wrap justify-content-center align-items-start">
           <div className="d-flex flex-column">
             <Container className="w-360px flex-shrink-0 m-3 p-3 bg-secondary bd-pink-fuzz rounded">
-              <h3 className="text-center">Details</h3>
+              <h3 className="text-center mb-3">Details</h3>
               <div className="text-center">
-                <div>No Limit Texas Hold'em</div>
-                <div>0.10 / 0.20</div>
-                <div>DATE</div>
-                <div>TIME</div>
-                <div>ADDRESS</div>
+                <div>{game?.game_type}</div>
+                {game && <div>{he.decode(game?.stakes)}</div>}
+                <div>{game?.date}</div>
+                <div>{game?.time}</div>
+                <div>{game?.address}</div>
               </div>
-              {admin_test && (
+              {isAdmin && (
                 <div className="mt-3">
-                  <Button className="w-100 mb-2 btn-primary border-0">
+                  <Button
+                    onClick={navEditGame}
+                    className="w-100 mb-2 btn-primary border-0"
+                  >
                     Edit Details
                   </Button>
                   <Button className="w-100 btn-primary border-0">
@@ -37,57 +106,38 @@ function Game() {
             </Container>
           </div>
           <Container className="w-360px flex-shrink-0 m-3 p-3 bg-secondary bd-pink-fuzz rounded">
-            <h3 className="text-center">Members</h3>
-            <ListItem
-              label="Member 1"
-              text="$100"
-              textColor="green"
-              action={admin_test ? "Kick" : ""}
-              actionTo="/"
-            />
-            <ListItem
-              label="Member 2"
-              text="$50"
-              textColor="green"
-              action={admin_test ? "Kick" : ""}
-              actionTo="/"
-            />
-            <ListItem
-              label="Member 3"
-              text="-$150"
-              textColor="red"
-              action={admin_test ? "Kick" : ""}
-              actionTo="/"
-            />
+            <h3 className="text-center mb-3">Members</h3>
+            {memberList}
             <div className="mt-3">
-              {admin_test && (
-                <Button className="w-100 mb-2 btn-primary border-0">
-                  Manage RSVPs
-                </Button>
-              )}
-              {admin_test && (
-                <Button className="w-100 mb-2 btn-primary border-0">
-                  Add New Member
-                </Button>
-              )}
-              {admin_test && (
-                <Button className="w-100 btn-primary border-0">
-                  Edit Leaderboard
-                </Button>
+              {isAdmin && (
+                <>
+                  <Button
+                    onClick={navAddMember}
+                    className="w-100 mb-2 btn-primary border-0"
+                  >
+                    Add Member
+                  </Button>
+                  <Button className="w-100 mb-2 btn-primary border-0">
+                    Manage RSVPs
+                  </Button>
+                  <Button className="w-100 btn-primary border-0">
+                    Edit Leaderboard
+                  </Button>
+                </>
               )}
             </div>
           </Container>
           <Container className="w-360px flex-shrink-0 m-3 p-3 bg-secondary bd-pink-fuzz rounded">
-            <h3 className="text-center">Message Board</h3>
+            <h3 className="text-center mb-3">Message Board</h3>
             <ListItem
               label="Member 2"
-              action={admin_test ? "Delete" : ""}
+              action={isAdmin ? "Delete" : ""}
               actionTo="/"
               message="Hey guys what the fuck is up? I'll be a litte late today. Catch you later Gs."
             />
             <ListItem
               label="Member 2"
-              action={admin_test ? "Delete" : ""}
+              action={isAdmin ? "Delete" : ""}
               actionTo="/"
               message="Hey guys what the fuck is up? I'll be a litte late today. Catch you later Gs."
             />

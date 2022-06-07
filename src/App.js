@@ -9,15 +9,20 @@ import Index from "./components/Home";
 import SignUp from "./components/SignUp";
 import LogIn from "./components/LogIn";
 import Profile from "./components/Profile";
+import ChangeUsername from "./components/ChangeUsername";
+import ChangePassword from "./components/ChangePassword";
+import ChangeEmail from "./components/ChangeEmail";
+import FinalWarning from "./components/FinalWarning";
 import Games from "./components/Games";
-import CreateGame from "./components/CreateGame";
+import GameForm from "./components/GameForm";
 import Game from "./components/Game";
+import AddMember from "./components/AddMember";
 import PageNotFound from "./components/PageNotFound";
 // Contexts
 import { AuthContextProvider } from "./contexts/AuthContext";
 
 function App() {
-  // Last path is for 404 since nothing else matched
+  // Last path is for 404 (if nothing else matches, URL is not found)
   // AuthContextProvider wrapper makes user available to all components
   return (
     <AuthContextProvider>
@@ -36,6 +41,44 @@ function App() {
             }
           />
           <Route
+            path="change_username"
+            element={
+              <PrivateRoute>
+                <ChangeUsername />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="change_password"
+            element={
+              <PrivateRoute>
+                <ChangePassword />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="change_email"
+            element={
+              <PrivateRoute>
+                <ChangeEmail />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="delete_account"
+            element={
+              <PrivateRoute>
+                <FinalWarning
+                  title="Delete Account"
+                  message="Are you sure you want to delete your account?"
+                  bold="This action cannot be undone"
+                  action="Delete Account"
+                  actionTo="/"
+                />
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="games"
             exact
             element={
@@ -45,7 +88,35 @@ function App() {
             }
           />
           <Route
-            path="games/:game_id"
+            path="leave_game"
+            element={
+              <PrivateRoute>
+                <FinalWarning
+                  title="Leave Game"
+                  message="Your leaderboard status will be deleted and you will need an invitation to join again, are you sure you want to leave?"
+                  bold="This action cannot be undone"
+                  action="Leave Game"
+                  actionTo="/"
+                />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="delete_game"
+            element={
+              <PrivateRoute>
+                <FinalWarning
+                  title="Delete Game"
+                  message="You are the admin of this game, are you sure you want to permanently delete it?"
+                  bold="This action cannot be undone"
+                  action="Delete Game"
+                  actionTo="/"
+                />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="games/:gameId"
             exact
             element={
               <PrivateRoute>
@@ -58,7 +129,25 @@ function App() {
             exact
             element={
               <PrivateRoute>
-                <CreateGame />
+                <GameForm action="create" />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="edit_game"
+            exact
+            element={
+              <PrivateRoute>
+                <GameForm action="edit" />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="add_member"
+            exact
+            element={
+              <PrivateRoute>
+                <AddMember />
               </PrivateRoute>
             }
           />

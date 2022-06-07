@@ -13,13 +13,13 @@ function NavigationMenu() {
   // In accordance with react-boostrap md breakpoint
   // const IS_MOBILE = useMediaQuery({ query: "(max-width: 768)" });
 
-  // Set up navigation hook
-  const navigate = useNavigate();
-
-  // Get user context
+  // Context
   const { user, setUser } = useAuthContext();
 
-  // Handle user logout
+  // Constants
+  const navigate = useNavigate();
+
+  // Functions
   async function logUserOut(e) {
     // Make api call to logout
     const response = await fetch("http://localhost:3001/api/logout", {
@@ -42,7 +42,7 @@ function NavigationMenu() {
     navigate("/");
   }
 
-  // Display nav depending on AuthContext
+  // Render
   return (
     <Nav className="bg-pink bd-pink-fuzz align-items-center">
       <Nav.Item>
@@ -80,10 +80,14 @@ function NavigationMenu() {
         {!user && (
           <>
             <Nav.Item>
-              <Nav.Link href="/login">Login</Nav.Link>
+              <Nav.Link as={Link} to="/login">
+                Login
+              </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link href="/signup">Sign Up</Nav.Link>
+              <Nav.Link as={Link} to="/signup">
+                Sign Up
+              </Nav.Link>
             </Nav.Item>
           </>
         )}

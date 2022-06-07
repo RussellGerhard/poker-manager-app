@@ -5,6 +5,7 @@ import Logo from "./Logo";
 import { useLocation } from "react-router-dom";
 
 function Home() {
+  // Location state
   var { state } = useLocation();
 
   if (state && state.alertAuth) {
@@ -22,12 +23,11 @@ function Home() {
         <Logo className="mw-1200px" width="200" />
         <Container className="my-3 p-3 mw-1200px bg-pink bd-pink-fuzz rounded txt-lg text-center">
           <div>
-            HomeGame is a hub for you and your friends to organize poker
-            sessions.
+            HomeGame is a hub for you and your friends to organize poker games.
           </div>
           <div>
-            Create a game, invite your friends, and then log your poker sessions
-            every time you play!
+            Create a game to get started managing invites and keeping track of
+            results!
           </div>
         </Container>
       </div>

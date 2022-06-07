@@ -3,13 +3,80 @@ import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import ListItem from "./ListItem";
 // Hooks
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthContext } from "../contexts/AuthContext";
 
 function Games() {
-  // Set up nav so we can use hook in handler
+  // State
+  const [gameList, setGameList] = useState([]);
+
+  // Context
+  const { user } = useAuthContext();
+
+  // Constants
   const navigate = useNavigate();
 
-  // Function to handle create game navigation
+  // Effects
+  useEffect(() => {
+    // Fetch all games for current user
+    async function fetchGames() {
+      const result = await fetch("http://localhost:3001/api/games/", {
+        method: "GET",
+        credentials: "include",
+      });
+      const res = await result.json();
+
+      // Map games to a listing of games that includes user profit for each game
+      if (res.games) {
+        const games = res.games.map((game) => {
+          // Get profit and style based on value
+          const profit = parseInt(game.member_profit_map[user._id]);
+
+          var profit_color;
+          if (profit > 0) {
+            profit_color = "green";
+          } else if (profit < 0) {
+            profit_color = "red";
+          } else {
+            profit_color = "white";
+          }
+
+          // Determine if user is admin
+          var action;
+          var actionTo;
+          var actionState;
+          if (game.admin === user._id) {
+            action = "Delete";
+            actionTo = "/delete_game";
+            actionState = { id: game._id, endpoint: "delete_game" };
+          } else {
+            action = "Leave";
+            actionTo = "/leave_game";
+            actionState = { id: user._id, endpoint: "leave_game" };
+          }
+
+          return (
+            <ListItem
+              key={game._id}
+              label={game.name}
+              text={`$${profit}`}
+              textColor={profit_color}
+              isLink={true}
+              linkTo={game.url}
+              action={action}
+              actionTo={actionTo}
+              actionState={actionState}
+            />
+          );
+        });
+        setGameList(games);
+      }
+    }
+    fetchGames();
+  }, []);
+
+  // Functions
   function goToCreateGame() {
     navigate("/create_game");
   }
@@ -19,14 +86,12 @@ function Games() {
     <div className="d-flex justify-content-center align-items-center cust-min-height">
       <div className="mw-360px">
         <Container className="w-360px my-3 p-3 bg-secondary bd-pink-fuzz rounded">
-          <h3 className="text-center">Games</h3>
-          <ListItem
-            label="My Game"
-            isLink={true}
-            linkTo="/games/62962f2e209b7325f97c6e05"
-            action="Leave"
-            actionTo="/"
-          />
+          <h3 className="text-center mb-3">Games</h3>
+          {gameList.length === 0 ? (
+            <ListItem label="No games yet!" />
+          ) : (
+            gameList
+          )}
           <Button
             onClick={goToCreateGame}
             id="create-game-button"

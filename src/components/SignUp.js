@@ -11,22 +11,17 @@ import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../contexts/AuthContext";
 
 function SignUp() {
-  // AuthContext for redirecting authenticated users
-  const { user } = useAuthContext();
-
-  // State to keep track of errors
+  // State
   const [errors, setErrors] = useState([]);
   const [disableSignUp, setDisableSignUp] = useState(false);
 
-  // Set up navigation
+  // Context
+  const { user } = useAuthContext();
+
+  // Constants
   const navigate = useNavigate();
 
-  // Error list
-  const errorList = errors.map((error) => (
-    <Error key={error.param} message={error.msg} />
-  ));
-
-  // Function to handle submit
+  // Functions
   async function registerUser(e) {
     // Prevent page refresh
     e.preventDefault();
@@ -69,11 +64,17 @@ function SignUp() {
     setDisableSignUp(false);
   }
 
-  // Redirect authenticated users and render sign up to unauthenticated users
+  // Optional JSX for render
+  const errorList = errors.map((error) => (
+    <Error key={error.param} message={error.msg} />
+  ));
+
+  // Redirect authed users
   if (user) {
     return <Navigate to="/" state={{ alertAuth: true }} />;
   }
 
+  // Render
   return (
     <div className="d-flex justify-content-center align-items-center cust-min-height">
       <div className="mw-306px">

@@ -11,47 +11,20 @@ import { useState } from "react";
 import { useAuthContext } from "../contexts/AuthContext";
 
 function LogIn() {
-  // AuthContext for setting user on login
-  const { user, setUser } = useAuthContext();
-
-  // State for erro.usernames and locking login during a request
+  // State
   const [errors, setErrors] = useState([]);
   const [disableLogIn, setDisableLogIn] = useState(false);
 
-  // Set up navigation so we can use hook in submit handler
-  const navigate = useNavigate();
-
-  // Get state (to display info on redirect)
+  // Location state
   const { state } = useLocation();
 
-  // Display message if user was redirected from sign up
-  if (state) {
-    if (state.alertRegistration && state.username) {
-      var registrationMessage = (
-        <div className="my-3 p-3 bg-primary bd-primary-fuzz rounded text-center">
-          Thanks for signing up, {state.username}!
-        </div>
-      );
-    }
+  // Context
+  const { user, setUser } = useAuthContext();
 
-    if (state.alertNoAuth) {
-      var noAuthMessage = (
-        <div className="my-3 p-3 bg-primary bd-primary-fuzz rounded text-center">
-          You must be logged in to view that page
-        </div>
-      );
-    }
-  }
+  // Constants
+  const navigate = useNavigate();
 
-  // Error list
-  const errorList = errors.map((error) => (
-    <Error key={error.param} message={error.msg} />
-  ));
-
-  // Function to handle submit
-
-  // TODO: REWRITE LOGIN CODE
-
+  // Functions // TODO REWRITE??
   async function logUserIn(e) {
     // Prevent page refresh
     e.preventDefault();
@@ -91,17 +64,45 @@ function LogIn() {
       // Redirect to home with router_state so we can display welcome
       // Replace login page in history stack
       navigate("/profile", {
-        state: { alertWelcome: true },
+        state: {
+          alerts: [
+            { message: `Welcome back, ${res.user.username}!`, key: "alert1" },
+          ],
+        },
         replace: true,
       });
     }
   }
 
-  // Redirect authenticated users and render login to unauthenticated users
+  // Optional JSX for render
+  if (state) {
+    if (state.alertRegistration && state.username) {
+      var registrationMessage = (
+        <div className="my-3 p-3 bg-primary bd-primary-fuzz rounded text-center">
+          Thanks for signing up, {state.username}!
+        </div>
+      );
+    }
+
+    if (state.alertNoAuth) {
+      var noAuthMessage = (
+        <div className="my-3 p-3 bg-primary bd-primary-fuzz rounded text-center">
+          You must be logged in to view that page
+        </div>
+      );
+    }
+  }
+
+  const errorList = errors.map((error) => (
+    <Error key={error.param} message={error.msg} />
+  ));
+
+  // Redirect authed users
   if (user) {
     return <Navigate to="/" state={{ alertAuth: true }} />;
   }
 
+  // Render
   return (
     <div className="d-flex justify-content-center align-items-center cust-min-height">
       <div className="mw-306px">

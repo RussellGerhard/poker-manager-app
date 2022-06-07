@@ -39,6 +39,7 @@ function ListItem(props) {
           <Link
             className="d-flex px-3 align-items-center btn-primary text-dark"
             to={props.actionTo}
+            state={props.actionState}
           >
             {props.action}
           </Link>

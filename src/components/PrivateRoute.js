@@ -6,6 +6,7 @@ import Loading from "./Loading";
 import { useAuthContext } from "../contexts/AuthContext";
 
 function PrivateRoute({ children }) {
+  // Context
   const { loading, user } = useAuthContext();
 
   // In case of refresh, auth context has to check api for user

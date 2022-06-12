@@ -1,3 +1,5 @@
+// Imports
+import he from "he";
 // Components
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
@@ -33,15 +35,6 @@ function Games() {
           // Get profit and style based on value
           const profit = parseInt(game.member_profit_map[user._id]);
 
-          var profit_color;
-          if (profit > 0) {
-            profit_color = "green";
-          } else if (profit < 0) {
-            profit_color = "red";
-          } else {
-            profit_color = "white";
-          }
-
           // Determine if user is admin
           var action;
           var actionTo;
@@ -49,19 +42,30 @@ function Games() {
           if (game.admin === user._id) {
             action = "Delete";
             actionTo = "/delete_game";
-            actionState = { id: game._id, endpoint: "delete_game" };
+            actionState = {
+              gameId: game._id,
+              userId: null,
+              endpoint: "delete_game",
+              nav_dest: "/games",
+            };
           } else {
             action = "Leave";
             actionTo = "/leave_game";
-            actionState = { id: user._id, endpoint: "leave_game" };
+            actionState = {
+              gameId: game._id,
+              userId: null,
+              endpoint: "leave_game",
+              nav_dest: "/games",
+            };
           }
 
           return (
             <ListItem
               key={game._id}
-              label={game.name}
+              label={he.decode(game.name)}
               text={`$${profit}`}
-              textColor={profit_color}
+              textColor="cyan"
+              shadow={true}
               isLink={true}
               linkTo={game.url}
               action={action}
@@ -83,25 +87,17 @@ function Games() {
 
   // Render
   return (
-    <div className="d-flex justify-content-center align-items-center cust-min-height">
-      <div className="mw-360px">
-        <Container className="w-360px my-3 p-3 bg-secondary bd-pink-fuzz rounded">
-          <h3 className="text-center mb-3">Games</h3>
-          {gameList.length === 0 ? (
-            <ListItem label="No games yet!" />
-          ) : (
-            gameList
-          )}
-          <Button
-            onClick={goToCreateGame}
-            id="create-game-button"
-            className="w-100 mt-3"
-          >
-            Create Game
-          </Button>
-        </Container>
-      </div>
-    </div>
+    <Container className="w-360px my-3 p-3 bg-secondary bd-pink-fuzz rounded">
+      <h3 className="text-center mb-3">Games</h3>
+      {gameList.length === 0 ? <ListItem label="No games yet!" /> : gameList}
+      <Button
+        onClick={goToCreateGame}
+        id="create-game-button"
+        className="w-100 mt-3"
+      >
+        Create Game
+      </Button>
+    </Container>
   );
 }
 

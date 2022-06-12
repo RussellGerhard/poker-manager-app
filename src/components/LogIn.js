@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Logo from "./Logo";
-import Error from "./Error";
+import Alert from "./Alert";
 import { Navigate } from "react-router-dom";
 // Hooks
 import { useLocation, useNavigate } from "react-router-dom";
@@ -11,12 +11,14 @@ import { useState } from "react";
 import { useAuthContext } from "../contexts/AuthContext";
 
 function LogIn() {
-  // State
-  const [errors, setErrors] = useState([]);
-  const [disableLogIn, setDisableLogIn] = useState(false);
-
   // Location state
   const { state } = useLocation();
+  window.history.replaceState({}, "");
+
+  // State
+  const [errors, setErrors] = useState([]);
+  const [alerts, setAlerts] = useState(state ? state.alerts : []);
+  const [disableLogIn, setDisableLogIn] = useState(false);
 
   // Context
   const { user, setUser } = useAuthContext();
@@ -28,6 +30,11 @@ function LogIn() {
   async function logUserIn(e) {
     // Prevent page refresh
     e.preventDefault();
+
+    // Remove alerts
+    if (state) {
+      state.alerts = [];
+    }
 
     // Disable login button while request processes
     setDisableLogIn(true);
@@ -66,7 +73,10 @@ function LogIn() {
       navigate("/profile", {
         state: {
           alerts: [
-            { message: `Welcome back, ${res.user.username}!`, key: "alert1" },
+            {
+              message: `Welcome back, ${res.user.username}!`,
+              key: "welcomeBack",
+            },
           ],
         },
         replace: true,
@@ -74,43 +84,62 @@ function LogIn() {
     }
   }
 
-  // Optional JSX for render
-  if (state) {
-    if (state.alertRegistration && state.username) {
-      var registrationMessage = (
-        <div className="my-3 p-3 bg-primary bd-primary-fuzz rounded text-center">
-          Thanks for signing up, {state.username}!
-        </div>
-      );
-    }
+  function handleAlertRemove(key) {
+    const newAlerts = state.alerts.filter((alert) => alert.key !== key);
 
-    if (state.alertNoAuth) {
-      var noAuthMessage = (
-        <div className="my-3 p-3 bg-primary bd-primary-fuzz rounded text-center">
-          You must be logged in to view that page
-        </div>
-      );
-    }
+    setAlerts(newAlerts);
   }
 
+  function handleErrorRemove(key) {
+    const newErrors = errors.filter((error) => error.param !== key);
+
+    setErrors(newErrors);
+  }
+
+  // Optional JSX for render
+  var alertList = alerts.map((alert) => (
+    <Alert
+      key={alert.key}
+      warning={false}
+      message={alert.message}
+      onClose={() => handleAlertRemove(alert.key)}
+    />
+  ));
+
   const errorList = errors.map((error) => (
-    <Error key={error.param} message={error.msg} />
+    <Alert
+      key={error.param}
+      warning={true}
+      message={error.msg}
+      onClose={() => handleErrorRemove(error.param)}
+    />
   ));
 
   // Redirect authed users
   if (user) {
-    return <Navigate to="/" state={{ alertAuth: true }} />;
+    return (
+      <Navigate
+        to="/"
+        state={{
+          alerts: [
+            {
+              message: "You are already logged in!",
+              key: "alreadyAuthedAlert",
+            },
+          ],
+        }}
+      />
+    );
   }
 
   // Render
   return (
-    <div className="d-flex justify-content-center align-items-center cust-min-height">
-      <div className="mw-306px">
-        {registrationMessage}
-        {noAuthMessage}
-        {errorList}
-        <Container className="my-3 p-3 mw-360px bg-secondary bd-pink-fuzz rounded">
-          <Logo wiCurrentdth="150" />
+    <>
+      {errorList}
+      {alertList}
+      <div className="w-360px">
+        <Container className="my-3 p-3 bg-secondary bd-pink-fuzz rounded">
+          <Logo width="150" />
           <Form onSubmit={logUserIn} className="mt-4">
             <Form.Group className="mb-3" controlId="email">
               <Form.Label>Email Address</Form.Label>
@@ -122,7 +151,7 @@ function LogIn() {
               <Form.Control type="password" placeholder="Password" />
             </Form.Group>
 
-            <div className="mb-1">
+            <div className="m-1 mt-0">
               <a className="txt-sm" href="TODO">
                 Forgot Password?
               </a>
@@ -139,7 +168,7 @@ function LogIn() {
           </Form>
         </Container>
       </div>
-    </div>
+    </>
   );
 }
 

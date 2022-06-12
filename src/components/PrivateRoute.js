@@ -13,7 +13,21 @@ function PrivateRoute({ children }) {
   if (loading) return <Loading />;
 
   // Redirect to private route if user, else to login
-  return user ? children : <Navigate to="/login" />;
+  return user ? (
+    children
+  ) : (
+    <Navigate
+      to="/login"
+      state={{
+        alerts: [
+          {
+            key: "requireAuthAlert",
+            message: "You must be logged in to view that page",
+          },
+        ],
+      }}
+    />
+  );
 }
 
 export default PrivateRoute;

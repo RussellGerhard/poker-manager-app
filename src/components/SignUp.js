@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Logo from "./Logo";
-import Error from "./Error";
+import Alert from "./Alert";
 import { Navigate } from "react-router-dom";
 // Hooks
 import { useState } from "react";
@@ -57,7 +57,14 @@ function SignUp() {
       setErrors(res.errors);
     } else {
       navigate("/login", {
-        state: { username: username, alertRegistration: true },
+        state: {
+          alerts: [
+            {
+              message: `Thanks for signing up, ${username}`,
+              key: "signUpThanks",
+            },
+          ],
+        },
       });
     }
 
@@ -66,60 +73,69 @@ function SignUp() {
 
   // Optional JSX for render
   const errorList = errors.map((error) => (
-    <Error key={error.param} message={error.msg} />
+    <Alert key={error.param} warning={true} message={error.msg} />
   ));
 
   // Redirect authed users
   if (user) {
-    return <Navigate to="/" state={{ alertAuth: true }} />;
+    return (
+      <Navigate
+        to="/"
+        state={{
+          alerts: [
+            {
+              message: "You are already logged in",
+              key: "alreadyAuthedAlert",
+            },
+          ],
+        }}
+      />
+    );
   }
 
   // Render
   return (
-    <div className="d-flex justify-content-center align-items-center cust-min-height">
-      <div className="mw-306px">
-        {errorList}
-        <Container className="my-3 p-3 bg-secondary bd-pink-fuzz rounded">
-          <Logo width="150" />
-          <Form onSubmit={registerUser} className="mt-4">
-            <Form.Group className="mb-3" controlId="username">
-              <Form.Label>Username</Form.Label>
-              <Form.Control type="text" placeholder="Username" />
-              <div className="txt-xs m-1">
-                Use letters, numbers, and underscores
-              </div>
-            </Form.Group>
+    <div className="w-360px">
+      {errorList}
+      <Container className="my-3 p-3 bg-secondary bd-pink-fuzz rounded">
+        <Logo width="150" />
+        <Form onSubmit={registerUser} className="mt-4">
+          <Form.Group className="mb-3" controlId="username">
+            <Form.Label>Username</Form.Label>
+            <Form.Control type="text" placeholder="Username" />
+            <div className="txt-xs m-1">
+              Use letters, numbers, and underscores
+            </div>
+          </Form.Group>
 
-            <Form.Group className="mb-3" controlId="email">
-              <Form.Label>Email Address</Form.Label>
-              <Form.Control type="email" placeholder="Email" />
-            </Form.Group>
+          <Form.Group className="mb-3" controlId="email">
+            <Form.Label>Email Address</Form.Label>
+            <Form.Control type="email" placeholder="Email" />
+          </Form.Group>
 
-            <Form.Group className="mb-3" controlId="password">
-              <Form.Label>Password</Form.Label>
-              <Form.Control type="password" placeholder="Password" />
-            </Form.Group>
+          <Form.Group className="mb-3" controlId="password">
+            <Form.Label>Password</Form.Label>
+            <Form.Control type="password" placeholder="Password" />
+          </Form.Group>
 
-            <Form.Group className="mb-3" controlId="password-confirm">
-              <Form.Label>Comfirm Password</Form.Label>
-              <Form.Control type="password" placeholder="Password" />
-              <div className="txt-xs m-1">
-                Use 8 to 20 characters with a mix of letters, numbers, and
-                symbols
-              </div>
-            </Form.Group>
+          <Form.Group className="mb-3" controlId="password-confirm">
+            <Form.Label>Comfirm Password</Form.Label>
+            <Form.Control type="password" placeholder="Password" />
+            <div className="txt-xs m-1">
+              Use 8 to 20 characters with a mix of letters, numbers, and symbols
+            </div>
+          </Form.Group>
 
-            <Button
-              className="w-100 my-3"
-              variant="primary"
-              type="submit"
-              disabled={disableSignUp}
-            >
-              Sign Up
-            </Button>
-          </Form>
-        </Container>
-      </div>
+          <Button
+            className="w-100 my-3"
+            variant="primary"
+            type="submit"
+            disabled={disableSignUp}
+          >
+            Sign Up
+          </Button>
+        </Form>
+      </Container>
     </div>
   );
 }

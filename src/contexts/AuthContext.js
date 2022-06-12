@@ -21,8 +21,10 @@ const AuthContextProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   // Memoize user
-  const providerValue = useMemo(() => ({ user, setUser }), [user, setUser]);
-  providerValue.loading = loading;
+  const providerValue = useMemo(
+    () => ({ loading, user, setUser }),
+    [loading, user, setUser]
+  );
 
   // get user with API call
   useEffect(() => {
@@ -39,10 +41,10 @@ const AuthContextProvider = ({ children }) => {
       if (res.loggedIn) {
         setUser(res.user);
       }
+      setLoading(false);
     }
 
     loadUser();
-    setLoading(false);
   }, []);
 
   return (

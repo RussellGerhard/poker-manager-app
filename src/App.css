@@ -34,6 +34,12 @@ a {
 }
 
 /* Utility classes */
+
+/* Hide scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* Background utility */
 .bg-dark-gr {
   background: linear-gradient(to bottom, #0d0221, rgba(38, 20, 71) 90%);
@@ -61,6 +67,10 @@ a {
   font-size: 20px;
 }
 
+.txt-md {
+  font-size: 16px;
+}
+
 .txt-sm {
   font-size: 14px;
 }
@@ -74,7 +84,7 @@ a {
 }
 
 .text-shadow {
-  text-shadow: 1px 1px 1px #0d0221, 2px 2px 2px #0d0221;
+  text-shadow: 1px 1px 2px #0d0221, 2px 2px 4px #0d0221;
 }
 
 /* Min-height utility class */
@@ -98,7 +108,7 @@ a {
   max-width: 360px;
 }
 
-@media screen and (min-width: 924px) {
+@media screen and (min-width: 940px) {
   .notif-box {
     max-width: 500px;
   }

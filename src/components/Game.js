@@ -6,7 +6,6 @@ import Button from "react-bootstrap/Button";
 import CloseButton from "react-bootstrap/CloseButton";
 import Container from "react-bootstrap/esm/Container";
 import ListItem from "./ListItem";
-import Alert from "./Alert";
 // Hooks
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
@@ -24,9 +23,9 @@ function Game() {
 
   // State
   const [game, setGame] = useState(null);
+  const [session, setSession] = useState(null);
   const [posts, setPosts] = useState([]);
   const [isAdmin, setIsAdmin] = useState([]);
-  const [messageErrors, setMessageErrors] = useState([]);
   const [editingMessage, setEditingMessage] = useState(false);
   const [editingLeaderboard, setEditingLeaderboard] = useState(false);
   const [disablePostMessage, setDisablePostMessage] = useState(false);
@@ -43,6 +42,25 @@ function Game() {
   const params = useParams();
 
   // Functions
+  async function fetchGame() {
+    const result = await fetch(
+      `http://localhost:3001/api/games/${params.gameId}`,
+      {
+        method: "GET",
+        credentials: "include",
+      }
+    );
+    const res = await result.json();
+
+    if (res.status === "error") {
+      setErrors(res.errors);
+    } else {
+      setGame(res.game);
+      setSession(res.game.session);
+      setIsAdmin(res.isAdmin);
+    }
+  }
+
   async function fetchPosts() {
     const result = await fetch(
       `http://localhost:3001/api/posts/${params.gameId}`,
@@ -80,7 +98,7 @@ function Game() {
     const res = await response.json();
 
     if (res.status === "error") {
-      setMessageErrors(res.errors);
+      setErrors(res.errors);
     } else {
       setEditingMessage(false);
       fetchPosts();
@@ -92,21 +110,55 @@ function Game() {
     navigate("/edit_game", { state: { game: game } });
   }
 
+  function navEditSession() {
+    navigate("/edit_session", { state: { game: game } });
+  }
+
+  function navCreateSession() {
+    navigate("/create_session", { state: { game: game } });
+  }
+
   function navAddMember() {
     navigate("/add_member", { state: { game: game } });
   }
 
-  function handleMessageErrorRemove(key) {
-    const newMessageErrors = messageErrors.filter(
-      (error) => error.param !== key
-    );
-    setMessageErrors(newMessageErrors);
+  async function postProfit(e, memberId) {
+    e.preventDefault();
+
+    const profit = e.target[0].value;
+
+    // Check that profit is valid number
+    if (!+profit && profit !== "0") {
+      setErrors([{ msg: "Profit must be a valid number" }]);
+      return;
+    }
+
+    const response = await fetch("http://localhost:3001/api/update_profit", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        gameId: params.gameId,
+        memberId: memberId,
+        profit: profit,
+      }),
+    });
+
+    const res = await response.json();
+
+    if (res.status === "error") {
+      setErrors(res.errors);
+    } else {
+      fetchGame();
+    }
   }
 
   // Effects
   // Autoscroll and autofocus on message create
   useEffect(() => {
-    if (editingMessage || messageErrors.length !== 0) {
+    if (editingMessage) {
       if (messageInput.current) {
         messageInput.current.focus();
       }
@@ -116,30 +168,12 @@ function Game() {
         behavior: "smooth",
       });
     }
-  }, [editingMessage, messageErrors]);
+  }, [editingMessage]);
 
   // Fetch game data and posts
   useEffect(() => {
-    async function fetchGame() {
-      const result = await fetch(
-        `http://localhost:3001/api/games/${params.gameId}`,
-        {
-          method: "GET",
-          credentials: "include",
-        }
-      );
-      const res = await result.json();
-
-      if (res.status === "error") {
-        setErrors(res.errors);
-      } else {
-        setGame(res.game);
-        setIsAdmin(res.isAdmin);
-      }
-    }
-
-    fetchPosts();
     fetchGame();
+    fetchPosts();
   }, []);
 
   useLayoutEffect(() => {
@@ -151,52 +185,54 @@ function Game() {
   }, []);
 
   // JSX
-  const messageErrorList = messageErrors.map((error) => (
-    <Alert
-      key={error.param}
-      warning={true}
-      message={error.msg}
-      onClose={() => {
-        handleMessageErrorRemove(error.param);
-      }}
-    />
-  ));
-
   const memberList = game
     ? game.members.map((member) => {
-        const profit = parseInt(game.member_profit_map[member._id]);
-        var profit_color;
-        if (profit > 0) {
-          profit_color = "green";
-        } else if (profit < 0) {
-          profit_color = "red";
-        } else {
-          profit_color = "cyan";
-        }
+        const profit = Number(game.member_profit_map[member._id]).toFixed(2);
+        const profit_disp =
+          profit >= 0 ? `$${profit}` : `-$${Math.abs(profit).toFixed(2)}`;
+        const profit_color =
+          profit == 0 ? "cyan" : profit > 0 ? "#66ff00" : "#ff3131";
         return (
-          <ListItem
-            key={member._id}
-            label={member.username}
-            text={`$${profit}`}
-            textColor={profit_color}
-            shadow={true}
-            action={
-              isAdmin ? (user.username === member.username ? "" : "Kick") : ""
-            }
-            actionTo={
-              isAdmin
-                ? user.username === member.username
-                  ? null
-                  : "/kick_member"
-                : null
-            }
-            actionState={{
-              gameId: game._id,
-              userId: member._id,
-              endpoint: "kick_member",
-              nav_dest: `/games/${game._id}`,
-            }}
-          />
+          <div key={member._id}>
+            <ListItem
+              label={member.username}
+              text={profit_disp}
+              textColor={profit_color}
+              shadow={true}
+              action={
+                isAdmin ? (user.username === member.username ? "" : "Kick") : ""
+              }
+              actionTo={
+                isAdmin
+                  ? user.username === member.username
+                    ? null
+                    : "/kick_member"
+                  : null
+              }
+              actionState={{
+                gameId: game._id,
+                userId: member._id,
+                endpoint: "kick_member",
+                nav_dest: `/games/${game._id}`,
+              }}
+            />
+            {editingLeaderboard ? (
+              <Form
+                onSubmit={(e) => {
+                  postProfit(e, member._id);
+                }}
+                className="d-flex align-items-center mb-3 border-left border-2 border-primary"
+              >
+                <Form.Label className="txt-lg pt-1 px-2 w-75">
+                  Set Profit:
+                </Form.Label>
+                <Form.Control className="mx-2" />
+                <Button type="submit" className="w-25">
+                  Set
+                </Button>
+              </Form>
+            ) : null}
+          </div>
         );
       })
     : "";
@@ -240,7 +276,7 @@ function Game() {
                     const res = await response.json();
 
                     if (res.status === "error") {
-                      setMessageErrors(res.errors);
+                      setErrors(res.errors);
                       return;
                     } else {
                       fetchPosts();
@@ -253,6 +289,29 @@ function Game() {
       })
     : "";
 
+  // Game details
+  const gameDetails =
+    game?.game_type || game?.stakes ? (
+      <>
+        <div>{he.decode(game?.game_type)}</div>
+        <div>{he.decode(game?.stakes)}</div>
+      </>
+    ) : (
+      <div>No details yet!</div>
+    );
+
+  // Session details
+  const sessionDetails =
+    session?.date || session?.time || session?.address ? (
+      <>
+        <div>{he.decode(game.session?.date)}</div>
+        <div>{he.decode(game.session?.time)}</div>
+        <div>{he.decode(game.session?.address)}</div>
+      </>
+    ) : (
+      <div>No session yet!</div>
+    );
+
   // Render
   return (
     <>
@@ -260,29 +319,57 @@ function Game() {
         {game && he.decode(game.name)}
       </h1>
       <div className="responsive-container d-flex flex-wrap justify-content-center align-items-start">
-        <div className="d-flex flex-column">
+        <div>
           <Container className="w-360px flex-shrink-0 m-3 p-3 bg-secondary bd-pink-fuzz rounded">
-            <h3 className="text-center mb-3">Details</h3>
-            <div className="text-center border border-2 border-primary">
-              {game && <div>{he.decode(game?.game_type)}</div>}
-              {game && <div>{he.decode(game?.stakes)}</div>}
-              <div>{game?.date}</div>
-              <div>{game?.time}</div>
-              <div>{game?.address}</div>
+            <h3 className="text-center mb-3">Game Details</h3>
+            <div className="p-2 txt-lg text-center border border-2 border-primary">
+              {gameDetails}
             </div>
             {isAdmin && (
               <div className="mt-3">
                 <Button
                   onClick={navEditGame}
-                  className="w-100 mb-2 btn-primary border-0"
+                  className="w-100 btn-primary border-0"
                 >
                   Edit Details
                 </Button>
-                <Button className="w-100 btn-primary border-0">
-                  Log Session Results
-                </Button>
               </div>
             )}
+          </Container>
+          <Container className="w-360px flex-shrink-0 m-3 p-3 bg-secondary bd-pink-fuzz rounded">
+            <h3 className="text-center mb-3">Upcoming Session</h3>
+            <div className="p-2 txt-lg text-center border border-2 border-primary">
+              {sessionDetails}
+            </div>
+            <div className="mt-3">
+              {isAdmin && (
+                <>
+                  {session ? (
+                    <>
+                      <Button
+                        onClick={navEditSession}
+                        className="w-100 mb-2 btn-primary border-0"
+                      >
+                        Edit Session
+                      </Button>
+                      <Button className="w-100 mb-2 btn-primary border-0">
+                        Manage RSVPs
+                      </Button>
+                      <Button className="w-100 btn-primary border-0">
+                        Log Session Results
+                      </Button>
+                    </>
+                  ) : (
+                    <Button
+                      onClick={navCreateSession}
+                      className="w-100 btn-primary border-0"
+                    >
+                      Create Session
+                    </Button>
+                  )}
+                </>
+              )}
+            </div>
           </Container>
         </div>
         <Container className="w-360px flex-shrink-0 m-3 p-3 bg-secondary bd-pink-fuzz rounded">
@@ -297,12 +384,14 @@ function Game() {
                 >
                   Add Member
                 </Button>
-                <Button className="w-100 mb-2 btn-primary border-0">
-                  Manage RSVPs
-                </Button>
                 {editingLeaderboard ? (
-                  <Button className="w-100 mb-2 btn-primary border-0">
-                    Save Leaderboard
+                  <Button
+                    onClick={() => {
+                      setEditingLeaderboard(false);
+                    }}
+                    className="w-100 btn-primary border-0"
+                  >
+                    View Leaderboard
                   </Button>
                 ) : (
                   <Button
@@ -318,7 +407,6 @@ function Game() {
             )}
           </div>
         </Container>
-        {messageErrorList}
         <Container className="w-360px flex-shrink-0 m-3 p-3 bg-secondary bd-pink-fuzz rounded">
           <h3 className="text-center mb-3">Message Board</h3>
           {postList.length === 0 ? (

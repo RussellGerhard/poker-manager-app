@@ -9,10 +9,10 @@ import { useState, useLayoutEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useErrorContext } from "../contexts/ErrorContext";
 
-function GameForm(props) {
+function SessionForm(props) {
   // Location state
   const { state } = useLocation();
-  const game = state ? state.game : null;
+  const game = state.game;
 
   // State
   const [disableSubmit, setDisableSubmit] = useState(false);
@@ -24,20 +24,22 @@ function GameForm(props) {
   const navigate = useNavigate();
 
   // Functions
-  async function submitGameForm(e) {
+  async function submitSessionForm(e) {
     e.preventDefault();
 
     // Disable create button
     setDisableSubmit(true);
 
     // Grab name input
-    const name = e.target[0].value;
-    const game_type = e.target[1].value;
-    const stakes = e.target[2].value;
-    const gameId = game ? game._id : null;
+    const date = e.target[0].value;
+    const time = e.target[1].value;
+    const address = e.target[2].value;
+    const gameId = game._id;
+    const sessionId = game.session ? game.session._id : null;
 
     // Send info to backend and await response
-    const endpoint = props.action === "edit" ? "edit_game" : "create_game";
+    const endpoint =
+      props.action === "edit" ? "edit_session" : "create_session";
     const response = await fetch(`http://localhost:3001/api/${endpoint}`, {
       method: "POST",
       credentials: "include",
@@ -45,10 +47,11 @@ function GameForm(props) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        name,
-        game_type,
-        stakes,
+        date,
+        time,
+        address,
         gameId,
+        sessionId,
       }),
     });
 
@@ -76,31 +79,31 @@ function GameForm(props) {
   return (
     <Container className="my-3 p-3 w-360px bg-secondary bd-pink-fuzz rounded">
       <h3 className="text-center">
-        {props.action === "create" ? "Create Game" : "Edit Game"}
+        {props.action === "create" ? "Create Session" : "Edit Session"}
       </h3>
-      <Form onSubmit={submitGameForm} className="mt-4">
-        <Form.Group className="mb-2" controlId="name">
-          <Form.Label className="mb-1">Name*</Form.Label>
+      <Form onSubmit={submitSessionForm} className="mt-4">
+        <Form.Group className="mb-2" controlId="date">
+          <Form.Label className="mb-1">Date*</Form.Label>
           <Form.Control
             type="text"
-            placeholder="Poker Night"
-            defaultValue={game ? he.decode(game.name) : ""}
+            placeholder="Every Tuesday"
+            defaultValue={game.session ? game.session.date : ""}
           />
         </Form.Group>
-        <Form.Group className="mb-2" controlId="game_type">
-          <Form.Label className="mb-1">Game</Form.Label>
+        <Form.Group className="mb-2" controlId="time">
+          <Form.Label className="mb-1">Start Time*</Form.Label>
           <Form.Control
             type="text"
-            placeholder="No Limit Hold Em"
-            defaultValue={game ? he.decode(game.game_type) : ""}
+            placeholder="8:00pm"
+            defaultValue={game.session ? game.session.time : ""}
           />
         </Form.Group>
-        <Form.Group className="mb-1" controlId="stakes">
-          <Form.Label className="mb-1">Stakes</Form.Label>
+        <Form.Group className="mb-1" controlId="address">
+          <Form.Label className="mb-1">Address*</Form.Label>
           <Form.Control
             type="text"
-            placeholder="0.10 / 0.20"
-            defaultValue={game ? he.decode(game.stakes) : ""}
+            placeholder="20 W 34th St, New York, NY"
+            defaultValue={game.session ? game.session.address : ""}
           />
         </Form.Group>
         <div className="mb-2 txt-sm">* Indicates a required field</div>
@@ -117,4 +120,4 @@ function GameForm(props) {
   );
 }
 
-export default GameForm;
+export default SessionForm;

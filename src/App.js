@@ -16,6 +16,7 @@ import ChangeEmail from "./components/ChangeEmail";
 import FinalWarning from "./components/FinalWarning";
 import Games from "./components/Games";
 import GameForm from "./components/GameForm";
+import SessionForm from "./components/SessionForm";
 import Game from "./components/Game";
 import AddMember from "./components/AddMember";
 import PageNotFound from "./components/PageNotFound";
@@ -156,6 +157,24 @@ function App() {
                   element={
                     <PrivateRoute>
                       <GameForm action="edit" />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="create_session"
+                  exact
+                  element={
+                    <PrivateRoute>
+                      <SessionForm action="create" />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="edit_session"
+                  exact
+                  element={
+                    <PrivateRoute>
+                      <SessionForm action="edit" />
                     </PrivateRoute>
                   }
                 />

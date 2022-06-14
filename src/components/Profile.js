@@ -183,8 +183,10 @@ function Profile() {
           {NotificationList}
           <ListItem
             label="Invite"
-            action="RSVP"
+            action="Accept"
             actionTo="/"
+            secondAction="Decline"
+            secondActionTo="/"
             message="RG1 asked you to RSVP for a session of their poker game, My Game, at TIME on DATE"
           />
           <Button

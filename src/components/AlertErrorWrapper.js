@@ -1,10 +1,14 @@
 // Components
 import Alert from "./Alert";
 // Hooks
+import { useRef, useEffect } from "react";
 import { useErrorContext } from "../contexts/ErrorContext";
 import { useAlertContext } from "../contexts/AlertContext";
 
 function AlertErrorWrapper({ children }) {
+  // Refs
+  const errorListStart = useRef(null);
+
   // Context
   const { errors, setErrors } = useErrorContext();
   const { alert, setAlert } = useAlertContext();
@@ -15,6 +19,17 @@ function AlertErrorWrapper({ children }) {
 
     setErrors(newErrors);
   }
+
+  // Effects
+  useEffect(() => {
+    if (errorList.length != 0) {
+      errorListStart.current.scrollIntoView({
+        block: "start",
+        inline: "nearest",
+        behavior: "smooth",
+      });
+    }
+  }, [errors]);
 
   // Optional JSX for render
   const errorList = errors.map((error) => (
@@ -37,7 +52,7 @@ function AlertErrorWrapper({ children }) {
             }}
           />
         )}
-        {errorList}
+        <div ref={errorListStart}>{errorList}</div>
         {children}
       </div>
     </div>

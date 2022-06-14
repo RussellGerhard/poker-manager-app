@@ -2,19 +2,22 @@
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
-import Alert from "./Alert";
 // Hooks
-import { useState } from "react";
+import { useState, useLayoutEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useErrorContext } from "../contexts/ErrorContext";
+import { useAlertContext } from "../contexts/AlertContext";
 
 function AddMember() {
-  // State
-  const [errors, setErrors] = useState([]);
-  const [disableSubmit, setDisableSubmit] = useState(false);
-
   // Location state
   const { state } = useLocation();
-  const game = state.game;
+
+  // State
+  const [disableSubmit, setDisableSubmit] = useState(false);
+
+  // Contexts
+  const { setErrors } = useErrorContext();
+  const { setAlert } = useAlertContext();
 
   // Constants
   const navigate = useNavigate();
@@ -39,7 +42,7 @@ function AddMember() {
       },
       body: JSON.stringify({
         username: username,
-        gameId: game._id,
+        gameId: state.game._id,
       }),
     });
 
@@ -49,14 +52,9 @@ function AddMember() {
     if (res.status === "error") {
       setErrors(res.errors);
     } else {
-      navigate(`/games/${game._id}`, {
+      navigate(`/games/${state.game._id}`, {
         state: {
-          alerts: [
-            {
-              message: `Invitation sent to ${username}`,
-              key: "gameInviteSent",
-            },
-          ],
+          alert: `Invitation sent to ${username}`,
         },
       });
     }
@@ -64,14 +62,17 @@ function AddMember() {
     setDisableSubmit(false);
   }
 
-  // state-based JSX for render
-  const errorList = errors.map((error) => (
-    <Alert key={error.param} warning={true} message={error.msg} />
-  ));
+  // Effects
+  useLayoutEffect(() => {
+    if (state && state.alert) setAlert(state.alert);
+    setErrors([]);
+    return () => {
+      setAlert(null);
+    };
+  }, []);
 
   return (
     <div className="w-360px">
-      {errorList}
       <Container className="my-3 p-3 bg-secondary bd-pink-fuzz rounded">
         <h3 className="text-center mb-3">Add Member</h3>
         <Form onSubmit={sumbitAddMember}>

@@ -3,38 +3,33 @@ import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Logo from "./Logo";
-import Alert from "./Alert";
-import { Navigate } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 // Hooks
 import { useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { useAuthContext } from "../contexts/AuthContext";
+import { useErrorContext } from "../contexts/ErrorContext";
+import { useAlertContext } from "../contexts/AlertContext";
 
 function LogIn() {
   // Location state
   const { state } = useLocation();
-  window.history.replaceState({}, "");
 
   // State
-  const [errors, setErrors] = useState([]);
-  const [alerts, setAlerts] = useState(state ? state.alerts : []);
   const [disableLogIn, setDisableLogIn] = useState(false);
 
   // Context
   const { user, setUser } = useAuthContext();
+  const { setErrors } = useErrorContext();
+  const { setAlert } = useAlertContext();
 
   // Constants
   const navigate = useNavigate();
 
-  // Functions // TODO REWRITE??
+  // Functions
   async function logUserIn(e) {
     // Prevent page refresh
     e.preventDefault();
-
-    // Remove alerts
-    if (state) {
-      state.alerts = [];
-    }
 
     // Disable login button while request processes
     setDisableLogIn(true);
@@ -65,55 +60,27 @@ function LogIn() {
     // Set errors to be displayed
     if (res.status === "error") {
       setErrors(res.errors);
-      return;
     } else {
       setUser(res.user);
-      // Redirect to home with router_state so we can display welcome
+      // Redirect to home
       // Replace login page in history stack
       navigate("/profile", {
         state: {
-          alerts: [
-            {
-              message: `Welcome back, ${res.user.username}!`,
-              key: "welcomeBack",
-            },
-          ],
+          alert: `Welcome back, ${res.user.username}!`,
         },
         replace: true,
       });
     }
   }
 
-  function handleAlertRemove(key) {
-    const newAlerts = state.alerts.filter((alert) => alert.key !== key);
-
-    setAlerts(newAlerts);
-  }
-
-  function handleErrorRemove(key) {
-    const newErrors = errors.filter((error) => error.param !== key);
-
-    setErrors(newErrors);
-  }
-
-  // Optional JSX for render
-  var alertList = alerts.map((alert) => (
-    <Alert
-      key={alert.key}
-      warning={false}
-      message={alert.message}
-      onClose={() => handleAlertRemove(alert.key)}
-    />
-  ));
-
-  const errorList = errors.map((error) => (
-    <Alert
-      key={error.param}
-      warning={true}
-      message={error.msg}
-      onClose={() => handleErrorRemove(error.param)}
-    />
-  ));
+  // Effects
+  useLayoutEffect(() => {
+    if (state) setAlert(state.alert);
+    setErrors([]);
+    return () => {
+      setAlert(null);
+    };
+  }, []);
 
   // Redirect authed users
   if (user) {
@@ -121,12 +88,7 @@ function LogIn() {
       <Navigate
         to="/"
         state={{
-          alerts: [
-            {
-              message: "You are already logged in!",
-              key: "alreadyAuthedAlert",
-            },
-          ],
+          alert: "You are already logged in!",
         }}
       />
     );
@@ -134,41 +96,35 @@ function LogIn() {
 
   // Render
   return (
-    <>
-      {errorList}
-      {alertList}
-      <div className="w-360px">
-        <Container className="my-3 p-3 bg-secondary bd-pink-fuzz rounded">
-          <Logo width="150" />
-          <Form onSubmit={logUserIn} className="mt-4">
-            <Form.Group className="mb-3" controlId="email">
-              <Form.Label>Email Address</Form.Label>
-              <Form.Control type="email" placeholder="Email" />
-            </Form.Group>
+    <div className="w-360px">
+      <Container className="my-3 p-3 bg-secondary bd-pink-fuzz rounded">
+        <Logo width="150" />
+        <Form onSubmit={logUserIn} className="mt-4">
+          <Form.Group className="mb-3" controlId="email">
+            <Form.Label>Email Address</Form.Label>
+            <Form.Control type="email" placeholder="Email" />
+          </Form.Group>
 
-            <Form.Group controlId="password">
-              <Form.Label>Password</Form.Label>
-              <Form.Control type="password" placeholder="Password" />
-            </Form.Group>
+          <Form.Group controlId="password">
+            <Form.Label>Password</Form.Label>
+            <Form.Control type="password" placeholder="Password" />
+          </Form.Group>
 
-            <div className="m-1 mt-0">
-              <a className="txt-sm" href="TODO">
-                Forgot Password?
-              </a>
-            </div>
+          <Link className="m-1 mt-0 txt-sm" to="/forgot_password">
+            Forgot Password?
+          </Link>
 
-            <Button
-              className="w-100 my-3"
-              variant="primary"
-              type="submit"
-              disabled={disableLogIn}
-            >
-              Log In
-            </Button>
-          </Form>
-        </Container>
-      </div>
-    </>
+          <Button
+            className="w-100 mt-3"
+            variant="primary"
+            type="submit"
+            disabled={disableLogIn}
+          >
+            Log In
+          </Button>
+        </Form>
+      </Container>
+    </div>
   );
 }
 

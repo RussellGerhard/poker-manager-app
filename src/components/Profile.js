@@ -1,49 +1,32 @@
+// Imports
+import he from "he";
 // Components
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
-import Alert from "./Alert";
 import ListItem from "./ListItem";
 // Hooks
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuthContext } from "../contexts/AuthContext";
+import { useErrorContext } from "../contexts/ErrorContext";
+import { useAlertContext } from "../contexts/AlertContext";
 
 function Profile() {
-  // State
-  const [notifications, setNotifications] = useState([]);
-  const [errors, setErrors] = useState([]);
-
   // Location state
   const { state } = useLocation();
 
+  // State
+  const [notifications, setNotifications] = useState([]);
+
   // Context
   const { user } = useAuthContext();
+  const { setErrors } = useErrorContext();
+  const { setAlert } = useAlertContext();
 
   // Constants
   const navigate = useNavigate();
   const locale =
     navigator.languages.length === 0 ? "en-US" : navigator.languages[0];
-
-  // Effects
-  useEffect(() => {
-    // Fetch notifications for this user
-    async function fetchNotifications() {
-      const result = await fetch("http://localhost:3001/api/notifications", {
-        method: "GET",
-        credentials: "include",
-      });
-
-      const res = await result.json();
-
-      if (res.status === "error") {
-        setErrors(res.errors);
-      } else {
-        setNotifications(res.notifications);
-      }
-    }
-
-    fetchNotifications();
-  }, []);
 
   // Functions
   async function clearNotifications() {
@@ -77,20 +60,46 @@ function Profile() {
   }
 
   function navDeleteAccount() {
-    navigate("/delete_account");
+    navigate("/delete_account", {
+      state: {
+        gameId: null,
+        userId: null,
+        endpoint: "delete_account",
+        nav_dest: "/",
+      },
+    });
   }
 
+  // Effects
+  useEffect(() => {
+    // Fetch notifications for this user
+    async function fetchNotifications() {
+      const result = await fetch("http://localhost:3001/api/notifications", {
+        method: "GET",
+        credentials: "include",
+      });
+
+      const res = await result.json();
+
+      if (res.status === "error") {
+        setErrors(res.errors);
+      } else {
+        setNotifications(res.notifications);
+      }
+    }
+
+    fetchNotifications();
+  }, []);
+
+  useLayoutEffect(() => {
+    if (state && state.alert) setAlert(state.alert);
+    setErrors([]);
+    return () => {
+      setAlert(null);
+    };
+  }, []);
+
   // Optional JSX for render
-  const alertList = state
-    ? state.alerts.map((alert) => (
-        <Alert key={alert.key} warning={false} message={alert.message} />
-      ))
-    : "";
-
-  const errorList = errors.map((error) => (
-    <Alert key={error.param} warning={true} message={error.msg} />
-  ));
-
   const NotificationList = notifications.map((notif) => {
     var action;
     var apiEndpoint;
@@ -151,11 +160,21 @@ function Profile() {
       };
     }
 
+    const date = Date.parse(notif.date);
+    const formatted_date = new Intl.DateTimeFormat(locale, {
+      weekday: "short",
+      hour: "numeric",
+      minute: "numeric",
+    }).format(date);
+
     return (
       <ListItem
         key={notif.date}
         label={notif.label}
-        message={notif.message}
+        text={formatted_date}
+        textColor="black"
+        smallText={true}
+        message={he.decode(notif.message)}
         action={action}
         apiCallback={apiFunction}
       />
@@ -165,8 +184,6 @@ function Profile() {
   // Render
   return (
     <>
-      {alertList}
-      {errorList}
       <h1 className="text-primary text-center mt-4">
         {user.username}'s Account
       </h1>
@@ -189,14 +206,14 @@ function Profile() {
         </Container>
         <Container className="w-360px flex-shrink-0 m-3 p-3 bg-secondary bd-pink-fuzz rounded">
           <h3 className="text-center mb-3">Manage Account</h3>
+          <Button onClick={navChangeEmail} className="w-100 mb-2">
+            Change Email
+          </Button>
           <Button onClick={navChangeUsername} className="w-100 mb-2">
             Change Username
           </Button>
           <Button onClick={navChangePassword} className="w-100 mb-2">
             Change Password
-          </Button>
-          <Button onClick={navChangeEmail} className="w-100 mb-2">
-            Change Email
           </Button>
           <Button
             onClick={navDeleteAccount}

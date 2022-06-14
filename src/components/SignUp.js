@@ -3,20 +3,25 @@ import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Logo from "./Logo";
-import Alert from "./Alert";
 import { Navigate } from "react-router-dom";
 // Hooks
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLayoutEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuthContext } from "../contexts/AuthContext";
+import { useErrorContext } from "../contexts/ErrorContext";
+import { useAlertContext } from "../contexts/AlertContext";
 
 function SignUp() {
+  // Location state
+  const { state } = useLocation();
+
   // State
-  const [errors, setErrors] = useState([]);
   const [disableSignUp, setDisableSignUp] = useState(false);
 
   // Context
   const { user } = useAuthContext();
+  const { setErrors } = useErrorContext();
+  const { setAlert } = useAlertContext();
 
   // Constants
   const navigate = useNavigate();
@@ -57,46 +62,30 @@ function SignUp() {
       setErrors(res.errors);
     } else {
       navigate("/login", {
-        state: {
-          alerts: [
-            {
-              message: `Thanks for signing up, ${username}`,
-              key: "signUpThanks",
-            },
-          ],
-        },
+        state: { alert: `Thanks for signing up, ${username}` },
       });
     }
 
     setDisableSignUp(false);
   }
 
-  // Optional JSX for render
-  const errorList = errors.map((error) => (
-    <Alert key={error.param} warning={true} message={error.msg} />
-  ));
+  // Effects
+  useLayoutEffect(() => {
+    if (state && state.alert) setAlert(state.alert);
+    setErrors([]);
+    return () => {
+      setAlert(null);
+    };
+  }, []);
 
   // Redirect authed users
   if (user) {
-    return (
-      <Navigate
-        to="/"
-        state={{
-          alerts: [
-            {
-              message: "You are already logged in",
-              key: "alreadyAuthedAlert",
-            },
-          ],
-        }}
-      />
-    );
+    return <Navigate to="/" state={{ alert: "You are already logged in" }} />;
   }
 
   // Render
   return (
     <div className="w-360px">
-      {errorList}
       <Container className="my-3 p-3 bg-secondary bd-pink-fuzz rounded">
         <Logo width="150" />
         <Form onSubmit={registerUser} className="mt-4">
@@ -127,7 +116,7 @@ function SignUp() {
           </Form.Group>
 
           <Button
-            className="w-100 my-3"
+            className="w-100"
             variant="primary"
             type="submit"
             disabled={disableSignUp}

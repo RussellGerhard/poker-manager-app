@@ -17,7 +17,11 @@ const ErrorContextProvider = ({ children }) => {
   // value for the context
   const [errors, setErrors] = useState([]);
 
-  return <ErrorContext.Provider>{children}</ErrorContext.Provider>;
+  return (
+    <ErrorContext.Provider value={{ errors, setErrors }}>
+      {children}
+    </ErrorContext.Provider>
+  );
 };
 
 export { useErrorContext, ErrorContextProvider };

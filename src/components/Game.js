@@ -8,11 +8,16 @@ import Container from "react-bootstrap/esm/Container";
 import ListItem from "./ListItem";
 import Alert from "./Alert";
 // Hooks
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { useAuthContext } from "../contexts/AuthContext";
+import { useErrorContext } from "../contexts/ErrorContext";
+import { useAlertContext } from "../contexts/AlertContext";
 
 function Game() {
+  // Location state
+  const { state } = useLocation();
+
   // Refs
   const messageBoardEnd = useRef(null);
   const messageInput = useRef(null);
@@ -21,17 +26,15 @@ function Game() {
   const [game, setGame] = useState(null);
   const [posts, setPosts] = useState([]);
   const [isAdmin, setIsAdmin] = useState([]);
-  const [errors, setErrors] = useState([]);
   const [messageErrors, setMessageErrors] = useState([]);
   const [editingMessage, setEditingMessage] = useState(false);
   const [editingLeaderboard, setEditingLeaderboard] = useState(false);
   const [disablePostMessage, setDisablePostMessage] = useState(false);
 
-  // Location state
-  const { state } = useLocation();
-
   // Context
   const { user } = useAuthContext();
+  const { setErrors } = useErrorContext();
+  const { setAlert } = useAlertContext();
 
   // Constants
   const locale =
@@ -132,17 +135,15 @@ function Game() {
     fetchGame();
   }, []);
 
+  useLayoutEffect(() => {
+    if (state && state.alert) setAlert(state.alert);
+    setErrors([]);
+    return () => {
+      setAlert(null);
+    };
+  }, []);
+
   // JSX
-  const alertList = state
-    ? state.alerts.map((alert) => (
-        <Alert key={alert.key} warning={false} message={alert.message} />
-      ))
-    : "";
-
-  const errorList = errors.map((error) => (
-    <Alert key={error.param} warning={true} message={error.msg} />
-  ));
-
   const messageErrorList = messageErrors.map((error) => (
     <Alert key={error.param} warning={true} message={error.msg} />
   ));
@@ -241,8 +242,6 @@ function Game() {
   // Render
   return (
     <>
-      {alertList}
-      {errorList}
       <h1 className="mt-4 text-primary text-center">
         {game && he.decode(game.name)}
       </h1>

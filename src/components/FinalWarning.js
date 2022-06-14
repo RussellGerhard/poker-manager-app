@@ -2,18 +2,22 @@
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
-import Alert from "./Alert";
 // Hooks
-import { useState } from "react";
+import { useState, useLayoutEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuthContext } from "../contexts/AuthContext";
+import { useErrorContext } from "../contexts/ErrorContext";
 
 function FinalWarning(props) {
   // State
   const [disableSubmit, setDisableSubmit] = useState(false);
-  const [errors, setErrors] = useState([]);
 
   // Location state
   const { state } = useLocation();
+
+  // Context
+  const { setUser } = useAuthContext();
+  const { setErrors } = useErrorContext();
 
   // Constants
   const navigate = useNavigate();
@@ -37,24 +41,25 @@ function FinalWarning(props) {
 
     const res = await response.json();
 
-    // TODO logic to redirect based on what final warning was for
     if (res.status === "error") {
       setErrors(res.errors);
     } else {
+      if (endpoint === "delete_account") {
+        setUser(null);
+      }
       navigate(state.nav_dest);
     }
 
     setDisableSubmit(false);
   }
 
-  // Optional JSX for render
-  const errorList = errors.map((error) => (
-    <Alert key={error.param} warning={true} message={error.msg} />
-  ));
+  // Effects
+  useLayoutEffect(() => {
+    setErrors([]);
+  }, []);
 
   return (
     <div className="w-360px">
-      {errorList}
       <Container className="my-3 p-3 bg-secondary bd-pink-fuzz rounded">
         <h3 className="text-center mb-3">{props.title}</h3>
         <p className="text-center">{props.message}</p>

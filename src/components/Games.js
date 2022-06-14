@@ -5,9 +5,10 @@ import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import ListItem from "./ListItem";
 // Hooks
-import { useEffect, useState } from "react";
+import { useEffect, useState, useLayoutEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../contexts/AuthContext";
+import { useErrorContext } from "../contexts/ErrorContext";
 
 function Games() {
   // State
@@ -15,10 +16,15 @@ function Games() {
 
   // Context
   const { user } = useAuthContext();
+  const { setErrors } = useErrorContext();
 
   // Constants
   const navigate = useNavigate();
 
+  // Functions
+  function goToCreateGame() {
+    navigate("/create_game");
+  }
   // Effects
   useEffect(() => {
     // Fetch all games for current user
@@ -27,7 +33,13 @@ function Games() {
         method: "GET",
         credentials: "include",
       });
+
       const res = await result.json();
+
+      if (res.status === "error") {
+        setErrors(res.errors);
+        return;
+      }
 
       // Map games to a listing of games that includes user profit for each game
       if (res.games) {
@@ -80,10 +92,9 @@ function Games() {
     fetchGames();
   }, []);
 
-  // Functions
-  function goToCreateGame() {
-    navigate("/create_game");
-  }
+  useLayoutEffect(() => {
+    setErrors([]);
+  }, []);
 
   // Render
   return (

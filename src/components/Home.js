@@ -1,26 +1,31 @@
 // Components
 import Container from "react-bootstrap/Container";
 import Logo from "./Logo";
-import Alert from "./Alert";
 // Hooks
 import { useLocation } from "react-router-dom";
+import { useLayoutEffect } from "react";
+import { useErrorContext } from "../contexts/ErrorContext";
+import { useAlertContext } from "../contexts/AlertContext";
 
 function Home() {
   // Location state
   var { state } = useLocation();
 
-  // state-based JSX
-  const alertList = state
-    ? state.alerts.map((alert) => {
-        return (
-          <Alert key={alert.key} warning={false} message={alert.message} />
-        );
-      })
-    : "";
+  // Context
+  const { setErrors } = useErrorContext();
+  const { setAlert } = useAlertContext();
+
+  // Effects
+  useLayoutEffect(() => {
+    if (state) setAlert(state.alert);
+    setErrors([]);
+    return () => {
+      setAlert(null);
+    };
+  }, []);
 
   return (
     <div className="mw-1200px">
-      {alertList}
       <Logo className="mw-1200px" width="200" />
       <Container className="my-3 p-3 mw-1200px bg-pink bd-pink-fuzz rounded txt-lg text-center">
         <div>

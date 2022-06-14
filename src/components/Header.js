@@ -6,8 +6,10 @@ import Dropdown from "react-bootstrap/Dropdown";
 import { Link } from "react-router-dom";
 import Logo from "./Logo";
 // Hooks
+import { useLayoutEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../contexts/AuthContext";
+import { useErrorContext } from "../contexts/ErrorContext";
 
 function NavigationMenu() {
   // In accordance with react-boostrap md breakpoint
@@ -15,6 +17,7 @@ function NavigationMenu() {
 
   // Context
   const { user, setUser } = useAuthContext();
+  const { setErrors } = useErrorContext();
 
   // Constants
   const navigate = useNavigate();
@@ -32,15 +35,19 @@ function NavigationMenu() {
 
     const res = await response.json();
 
-    // Remove user, clear local storage, and redirect to home
-    setUser(null);
-
     if (res.status === "error") {
-      // TODO DISPLAY ERROR MESSAGE
+      setErrors(res.errors);
+    } else {
+      // Remove user and redirect to home
+      setUser(null);
+      navigate("/");
     }
-
-    navigate("/");
   }
+
+  // Effects
+  useLayoutEffect(() => {
+    setErrors([]);
+  }, []);
 
   // Render
   return (

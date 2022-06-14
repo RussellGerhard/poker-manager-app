@@ -96,35 +96,33 @@ function LogIn() {
 
   // Render
   return (
-    <div className="w-360px">
-      <Container className="my-3 p-3 bg-secondary bd-pink-fuzz rounded">
-        <Logo width="150" />
-        <Form onSubmit={logUserIn} className="mt-4">
-          <Form.Group className="mb-3" controlId="email">
-            <Form.Label>Email Address</Form.Label>
-            <Form.Control type="email" placeholder="Email" />
-          </Form.Group>
+    <Container className="my-3 p-3 w-360px bg-secondary bd-pink-fuzz rounded">
+      <Logo width="150" />
+      <Form onSubmit={logUserIn} className="mt-4">
+        <Form.Group className="mb-3" controlId="email">
+          <Form.Label>Email Address</Form.Label>
+          <Form.Control type="email" placeholder="Email" />
+        </Form.Group>
 
-          <Form.Group controlId="password">
-            <Form.Label>Password</Form.Label>
-            <Form.Control type="password" placeholder="Password" />
-          </Form.Group>
+        <Form.Group controlId="password">
+          <Form.Label>Password</Form.Label>
+          <Form.Control type="password" placeholder="Password" />
+        </Form.Group>
 
-          <Link className="m-1 mt-0 txt-sm" to="/forgot_password">
-            Forgot Password?
-          </Link>
+        <Link className="m-1 mt-0 txt-sm" to="/forgot_password">
+          Forgot Password?
+        </Link>
 
-          <Button
-            className="w-100 mt-3"
-            variant="primary"
-            type="submit"
-            disabled={disableLogIn}
-          >
-            Log In
-          </Button>
-        </Form>
-      </Container>
-    </div>
+        <Button
+          className="w-100 mt-3"
+          variant="primary"
+          type="submit"
+          disabled={disableLogIn}
+        >
+          Log In
+        </Button>
+      </Form>
+    </Container>
   );
 }
 

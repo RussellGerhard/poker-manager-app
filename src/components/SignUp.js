@@ -85,47 +85,45 @@ function SignUp() {
 
   // Render
   return (
-    <div className="w-360px">
-      <Container className="my-3 p-3 bg-secondary bd-pink-fuzz rounded">
-        <Logo width="150" />
-        <Form onSubmit={registerUser} className="mt-4">
-          <Form.Group className="mb-3" controlId="username">
-            <Form.Label>Username</Form.Label>
-            <Form.Control type="text" placeholder="Username" />
-            <div className="txt-xs m-1">
-              Use letters, numbers, and underscores
-            </div>
-          </Form.Group>
+    <Container className="my-3 p-3 w-360px bg-secondary bd-pink-fuzz rounded">
+      <Logo width="150" />
+      <Form onSubmit={registerUser} className="mt-4">
+        <Form.Group className="mb-3" controlId="username">
+          <Form.Label>Username</Form.Label>
+          <Form.Control type="text" placeholder="Username" />
+          <div className="txt-xs m-1">
+            Use letters, numbers, and underscores
+          </div>
+        </Form.Group>
 
-          <Form.Group className="mb-3" controlId="email">
-            <Form.Label>Email Address</Form.Label>
-            <Form.Control type="email" placeholder="Email" />
-          </Form.Group>
+        <Form.Group className="mb-3" controlId="email">
+          <Form.Label>Email Address</Form.Label>
+          <Form.Control type="email" placeholder="Email" />
+        </Form.Group>
 
-          <Form.Group className="mb-3" controlId="password">
-            <Form.Label>Password</Form.Label>
-            <Form.Control type="password" placeholder="Password" />
-          </Form.Group>
+        <Form.Group className="mb-3" controlId="password">
+          <Form.Label>Password</Form.Label>
+          <Form.Control type="password" placeholder="Password" />
+        </Form.Group>
 
-          <Form.Group className="mb-3" controlId="password-confirm">
-            <Form.Label>Comfirm Password</Form.Label>
-            <Form.Control type="password" placeholder="Password" />
-            <div className="txt-xs m-1">
-              Use 8 to 20 characters with a mix of letters, numbers, and symbols
-            </div>
-          </Form.Group>
+        <Form.Group className="mb-3" controlId="password-confirm">
+          <Form.Label>Comfirm Password</Form.Label>
+          <Form.Control type="password" placeholder="Password" />
+          <div className="txt-xs m-1">
+            Use 8 to 20 characters with a mix of letters, numbers, and symbols
+          </div>
+        </Form.Group>
 
-          <Button
-            className="w-100"
-            variant="primary"
-            type="submit"
-            disabled={disableSignUp}
-          >
-            Sign Up
-          </Button>
-        </Form>
-      </Container>
-    </div>
+        <Button
+          className="w-100"
+          variant="primary"
+          type="submit"
+          disabled={disableSignUp}
+        >
+          Sign Up
+        </Button>
+      </Form>
+    </Container>
   );
 }
 

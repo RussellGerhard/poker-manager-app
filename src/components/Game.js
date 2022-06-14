@@ -96,6 +96,13 @@ function Game() {
     navigate("/add_member", { state: { game: game } });
   }
 
+  function handleMessageErrorRemove(key) {
+    const newMessageErrors = messageErrors.filter(
+      (error) => error.param !== key
+    );
+    setMessageErrors(newMessageErrors);
+  }
+
   // Effects
   // Autoscroll and autofocus on message create
   useEffect(() => {
@@ -145,7 +152,14 @@ function Game() {
 
   // JSX
   const messageErrorList = messageErrors.map((error) => (
-    <Alert key={error.param} warning={true} message={error.msg} />
+    <Alert
+      key={error.param}
+      warning={true}
+      message={error.msg}
+      onClose={() => {
+        handleMessageErrorRemove(error.param);
+      }}
+    />
   ));
 
   const memberList = game

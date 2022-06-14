@@ -137,23 +137,13 @@ function Profile() {
         } else if (notif.label === "Game Invite") {
           navigate(`/games/${notif.game}`, {
             state: {
-              alerts: [
-                {
-                  message: `Welcome to the game, ${user.username}`,
-                  key: "gameInviteWelcome",
-                },
-              ],
+              alert: `Welcome to the game, ${user.username}`,
             },
           });
         } else {
           navigate("/profile", {
             state: {
-              alerts: [
-                {
-                  message: `Successfully RSVPed for ${res.game}`,
-                  key: "gameInviteWelcome",
-                },
-              ],
+              alerts: `Successfully RSVPed for ${res.game}`,
             },
           });
         }

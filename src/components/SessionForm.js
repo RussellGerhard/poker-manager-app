@@ -5,7 +5,7 @@ import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 // Hooks
-import { useState, useLayoutEffect } from "react";
+import { useState, useLayoutEffect, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useErrorContext } from "../contexts/ErrorContext";
 
@@ -13,6 +13,9 @@ function SessionForm(props) {
   // Location state
   const { state } = useLocation();
   const game = state.game;
+
+  // Refs
+  const dateInput = useRef();
 
   // State
   const [disableSubmit, setDisableSubmit] = useState(false);
@@ -71,6 +74,10 @@ function SessionForm(props) {
   }
 
   // Effects
+  useEffect(() => {
+    dateInput.current.focus();
+  }, []);
+
   useLayoutEffect(() => {
     setErrors([]);
   }, []);
@@ -85,9 +92,10 @@ function SessionForm(props) {
         <Form.Group className="mb-2" controlId="date">
           <Form.Label className="mb-1">Date*</Form.Label>
           <Form.Control
+            ref={dateInput}
             type="text"
             placeholder="Every Tuesday"
-            defaultValue={game.session ? game.session.date : ""}
+            defaultValue={game.session ? he.decode(game.session.date) : ""}
           />
         </Form.Group>
         <Form.Group className="mb-2" controlId="time">
@@ -95,7 +103,7 @@ function SessionForm(props) {
           <Form.Control
             type="text"
             placeholder="8:00pm"
-            defaultValue={game.session ? game.session.time : ""}
+            defaultValue={game.session ? he.decode(game.session.time) : ""}
           />
         </Form.Group>
         <Form.Group className="mb-1" controlId="address">
@@ -103,7 +111,7 @@ function SessionForm(props) {
           <Form.Control
             type="text"
             placeholder="20 W 34th St, New York, NY"
-            defaultValue={game.session ? game.session.address : ""}
+            defaultValue={game.session ? he.decode(game.session.address) : ""}
           />
         </Form.Group>
         <div className="mb-2 txt-sm">* Indicates a required field</div>

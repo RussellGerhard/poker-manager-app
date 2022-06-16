@@ -3,7 +3,7 @@ import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 // Hooks
-import { useState, useLayoutEffect } from "react";
+import { useState, useLayoutEffect, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useErrorContext } from "../contexts/ErrorContext";
 import { useAlertContext } from "../contexts/AlertContext";
@@ -11,6 +11,9 @@ import { useAlertContext } from "../contexts/AlertContext";
 function AddMember() {
   // Location state
   const { state } = useLocation();
+
+  // Refs
+  const usernameInput = useRef();
 
   // State
   const [disableSubmit, setDisableSubmit] = useState(false);
@@ -63,6 +66,10 @@ function AddMember() {
   }
 
   // Effects
+  useEffect(() => {
+    usernameInput.current.focus();
+  }, []);
+
   useLayoutEffect(() => {
     if (state && state.alert) setAlert(state.alert);
     setErrors([]);
@@ -78,7 +85,7 @@ function AddMember() {
         <Form onSubmit={sumbitAddMember}>
           <Form.Group className="mb-3" controlId="new-username">
             <Form.Label>Member Username</Form.Label>
-            <Form.Control type="text" placeholder="Poker_Fan123" />
+            <Form.Control ref={usernameInput} type="text" />
           </Form.Group>
 
           <Button

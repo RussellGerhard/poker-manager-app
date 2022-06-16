@@ -3,12 +3,15 @@ import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 // Hooks
-import { useState, useLayoutEffect } from "react";
+import { useState, useLayoutEffect, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useErrorContext } from "../contexts/ErrorContext";
 import { useAuthContext } from "../contexts/AuthContext";
 
 function ChangeUsername() {
+  // Refs
+  const usernameInput = useRef();
+
   // State
   const [disableSubmit, setDisableSubmit] = useState(false);
 
@@ -66,6 +69,10 @@ function ChangeUsername() {
   }
 
   // Effects
+  useEffect(() => {
+    usernameInput.current.focus();
+  }, []);
+
   useLayoutEffect(() => {
     setErrors([]);
   }, []);
@@ -76,7 +83,11 @@ function ChangeUsername() {
       <Form onSubmit={changeUsername}>
         <Form.Group className="mb-3" controlId="new-username">
           <Form.Label>New Username</Form.Label>
-          <Form.Control type="text" placeholder="Poker_Fan123" />
+          <Form.Control
+            ref={usernameInput}
+            type="text"
+            placeholder="Poker_Fan123"
+          />
           <div className="txt-xs m-1 mb-0">
             Use letters, numbers, and underscores
           </div>

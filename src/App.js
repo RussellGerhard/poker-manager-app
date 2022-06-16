@@ -20,6 +20,7 @@ import SessionForm from "./components/SessionForm";
 import Game from "./components/Game";
 import AddMember from "./components/AddMember";
 import PageNotFound from "./components/PageNotFound";
+import SessionCashier from "./components/SessionCashier";
 // Contexts
 import { AuthContextProvider } from "./contexts/AuthContext";
 import { ErrorContextProvider } from "./contexts/ErrorContext";
@@ -108,6 +109,19 @@ function App() {
                   }
                 />
                 <Route
+                  path="delete_session"
+                  element={
+                    <PrivateRoute>
+                      <FinalWarning
+                        title="Delete Session"
+                        message="Session details, as well as all RSVP information, will be permanently deleted."
+                        bold="This action cannot be undone"
+                        action="Delete Session"
+                      />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
                   path="delete_game"
                   element={
                     <PrivateRoute>
@@ -175,6 +189,15 @@ function App() {
                   element={
                     <PrivateRoute>
                       <SessionForm action="edit" />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path="session_cashier"
+                  exact
+                  element={
+                    <PrivateRoute>
+                      <SessionCashier />
                     </PrivateRoute>
                   }
                 />

@@ -4,11 +4,14 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import { Link } from "react-router-dom";
 // Hooks
-import { useState, useLayoutEffect } from "react";
+import { useState, useLayoutEffect, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useErrorContext } from "../contexts/ErrorContext";
 
 function ChangePassword() {
+  // Refs
+  const newPasswordInput = useRef();
+
   // State
   const [disableSubmit, setDisableSubmit] = useState(false);
 
@@ -95,6 +98,10 @@ function ChangePassword() {
   }
 
   // Effects
+  useEffect(() => {
+    newPasswordInput.current.focus();
+  }, []);
+
   useLayoutEffect(() => {
     setErrors([]);
   }, []);
@@ -105,7 +112,7 @@ function ChangePassword() {
       <Form onSubmit={changePassword}>
         <Form.Group className="mb-3" controlId="new-password">
           <Form.Label>New Password</Form.Label>
-          <Form.Control type="password" />
+          <Form.Control ref={newPasswordInput} type="password" />
           <div className="txt-xs m-1">
             Use 8 to 20 characters with a mix of letters, numbers, and symbols
           </div>

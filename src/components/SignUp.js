@@ -5,7 +5,7 @@ import Form from "react-bootstrap/Form";
 import Logo from "./Logo";
 import { Navigate } from "react-router-dom";
 // Hooks
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuthContext } from "../contexts/AuthContext";
 import { useErrorContext } from "../contexts/ErrorContext";
@@ -14,6 +14,9 @@ import { useAlertContext } from "../contexts/AlertContext";
 function SignUp() {
   // Location state
   const { state } = useLocation();
+
+  // Refs
+  const usernameInput = useRef();
 
   // State
   const [disableSignUp, setDisableSignUp] = useState(false);
@@ -70,6 +73,10 @@ function SignUp() {
   }
 
   // Effects
+  useEffect(() => {
+    usernameInput.current.focus();
+  }, []);
+
   useLayoutEffect(() => {
     if (state && state.alert) setAlert(state.alert);
     setErrors([]);
@@ -90,7 +97,11 @@ function SignUp() {
       <Form onSubmit={registerUser} className="mt-4">
         <Form.Group className="mb-3" controlId="username">
           <Form.Label>Username</Form.Label>
-          <Form.Control type="text" placeholder="Username" />
+          <Form.Control
+            ref={usernameInput}
+            type="text"
+            placeholder="Username"
+          />
           <div className="txt-xs m-1">
             Use letters, numbers, and underscores
           </div>

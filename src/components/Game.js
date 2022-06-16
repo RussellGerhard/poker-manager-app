@@ -6,6 +6,7 @@ import Button from "react-bootstrap/Button";
 import CloseButton from "react-bootstrap/CloseButton";
 import Container from "react-bootstrap/esm/Container";
 import ListItem from "./ListItem";
+import Loading from "./Loading";
 // Hooks
 import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
@@ -22,6 +23,7 @@ function Game() {
   const messageInput = useRef(null);
 
   // State
+  const [loading, setLoading] = useState(true);
   const [game, setGame] = useState(null);
   const [session, setSession] = useState(null);
   const [posts, setPosts] = useState([]);
@@ -76,6 +78,8 @@ function Game() {
     } else {
       setPosts(res.posts);
     }
+    // This is called last in the effect, so loading ends here
+    setLoading(false);
   }
 
   async function postMessage(e) {
@@ -114,8 +118,24 @@ function Game() {
     navigate("/edit_session", { state: { game: game } });
   }
 
+  // Navigates to final warning
+  function navDeleteSession() {
+    navigate("/delete_session", {
+      state: {
+        gameId: game._id,
+        userId: null,
+        endpoint: "delete_session",
+        nav_dest: `/games/${game._id}`,
+      },
+    });
+  }
+
   function navCreateSession() {
     navigate("/create_session", { state: { game: game } });
+  }
+
+  function navSessionCashier() {
+    navigate("/session_cashier", { state: { game: game } });
   }
 
   function navAddMember() {
@@ -155,6 +175,103 @@ function Game() {
     }
   }
 
+  async function joinSession(e) {
+    e.preventDefault();
+
+    const response = await fetch("http://localhost:3001/api/join_session", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        gameId: params.gameId,
+      }),
+    });
+
+    const res = await response.json();
+
+    if (res.status === "error") {
+      setErrors(res.errors);
+    } else {
+      fetchGame();
+    }
+  }
+
+  async function leaveSession(e) {
+    e.preventDefault();
+
+    const response = await fetch("http://localhost:3001/api/leave_session", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        gameId: params.gameId,
+      }),
+    });
+
+    const res = await response.json();
+
+    if (res.status === "error") {
+      setErrors(res.errors);
+    } else {
+      fetchGame();
+    }
+  }
+
+  async function inviteMemberRSVP(e, memberId) {
+    e.preventDefault();
+
+    const response = await fetch("http://localhost:3001/api/send_rsvp_invite", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        gameId: params.gameId,
+        memberId: memberId,
+      }),
+    });
+
+    const res = await response.json();
+
+    if (res.status === "error") {
+      setErrors(res.errors);
+    } else {
+      fetchGame();
+    }
+  }
+
+  async function removeMemberRSVP(e, memberId) {
+    e.preventDefault();
+
+    const response = await fetch(
+      "http://localhost:3001/api/remove_session_member",
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          gameId: params.gameId,
+          memberId: memberId,
+        }),
+      }
+    );
+
+    const res = await response.json();
+
+    if (res.status === "error") {
+      setErrors(res.errors);
+    } else {
+      fetchGame();
+    }
+  }
+
   // Effects
   // Autoscroll and autofocus on message create
   useEffect(() => {
@@ -172,6 +289,7 @@ function Game() {
 
   // Fetch game data and posts
   useEffect(() => {
+    // This order matters: loading ends after posts are loaded
     fetchGame();
     fetchPosts();
   }, []);
@@ -185,6 +303,13 @@ function Game() {
   }, []);
 
   // JSX
+  const BORDER_RSVP_MAP = {
+    accepted: "border-success",
+    declined: "border-dark",
+    invited: "border-warning",
+    uninvited: "border-primary",
+  };
+
   const memberList = game
     ? game.members.map((member) => {
         const profit = Number(game.member_profit_map[member._id]).toFixed(2);
@@ -192,13 +317,51 @@ function Game() {
           profit >= 0 ? `$${profit}` : `-$${Math.abs(profit).toFixed(2)}`;
         const profit_color =
           profit == 0 ? "cyan" : profit > 0 ? "#66ff00" : "#ff3131";
+
+        var secondAction;
+        var secondApiCallback;
+        const rsvp_status = game.session?.rsvp_map[member._id];
+        if (game.session) {
+          if (user._id === member._id) {
+            if (rsvp_status === "accepted") {
+              secondAction = "Leave Session";
+              secondApiCallback = (e) => {
+                leaveSession(e);
+              };
+            } else if (rsvp_status === "invited" || isAdmin) {
+              secondAction = "Join Session";
+              secondApiCallback = (e) => {
+                joinSession(e);
+              };
+            }
+          } else if (rsvp_status === "accepted" && isAdmin) {
+            secondAction = "Remove from Session";
+            secondApiCallback = (e) => {
+              removeMemberRSVP(e, member._id);
+            };
+          } else if (rsvp_status === "invited" && isAdmin) {
+            secondAction = "Invite to Session";
+            secondApiCallback = (e) => {
+              inviteMemberRSVP(e, member._id);
+            };
+          } else if (isAdmin) {
+            secondAction = "Invite to Session";
+            secondApiCallback = (e) => {
+              inviteMemberRSVP(e, member._id);
+            };
+          }
+        }
+
         return (
           <div key={member._id}>
             <ListItem
               label={member.username}
               text={profit_disp}
               textColor={profit_color}
-              shadow={true}
+              textShadow={true}
+              borderVariant={
+                BORDER_RSVP_MAP[game.session?.rsvp_map[member._id]]
+              }
               action={
                 isAdmin ? (user.username === member.username ? "" : "Kick") : ""
               }
@@ -207,7 +370,7 @@ function Game() {
                   ? user.username === member.username
                     ? null
                     : "/kick_member"
-                  : null
+                  : ""
               }
               actionState={{
                 gameId: game._id,
@@ -215,6 +378,8 @@ function Game() {
                 endpoint: "kick_member",
                 nav_dest: `/games/${game._id}`,
               }}
+              secondAction={secondAction}
+              secondApiCallback={secondApiCallback}
             />
             {editingLeaderboard ? (
               <Form
@@ -313,16 +478,18 @@ function Game() {
     );
 
   // Render
-  return (
-    <>
+  return loading ? (
+    <Loading />
+  ) : (
+    <div className="responsive-container">
       <h1 className="mt-4 text-primary text-center">
         {game && he.decode(game.name)}
       </h1>
-      <div className="responsive-container d-flex flex-wrap justify-content-center align-items-start">
-        <div>
+      <div className="d-flex flex-wrap justify-content-center align-items-start">
+        <div className="d-flex flex-wrap justify-content-center align-items-stretch">
           <Container className="w-360px flex-shrink-0 m-3 p-3 bg-secondary bd-pink-fuzz rounded">
             <h3 className="text-center mb-3">Game Details</h3>
-            <div className="p-2 txt-lg text-center border border-2 border-primary">
+            <div className="p-2 txt-lg text-center border border-3 border-primary">
               {gameDetails}
             </div>
             {isAdmin && (
@@ -338,7 +505,7 @@ function Game() {
           </Container>
           <Container className="w-360px flex-shrink-0 m-3 p-3 bg-secondary bd-pink-fuzz rounded">
             <h3 className="text-center mb-3">Upcoming Session</h3>
-            <div className="p-2 txt-lg text-center border border-2 border-primary">
+            <div className="p-2 txt-lg text-center border border-3 border-primary">
               {sessionDetails}
             </div>
             <div className="mt-3">
@@ -352,11 +519,17 @@ function Game() {
                       >
                         Edit Session
                       </Button>
-                      <Button className="w-100 mb-2 btn-primary border-0">
-                        Manage RSVPs
+                      <Button
+                        onClick={navDeleteSession}
+                        className="w-100 mb-2 btn-primary border-0"
+                      >
+                        Delete Session
                       </Button>
-                      <Button className="w-100 btn-primary border-0">
-                        Log Session Results
+                      <Button
+                        onClick={navSessionCashier}
+                        className="w-100 btn-primary border-0"
+                      >
+                        Session Cashier
                       </Button>
                     </>
                   ) : (
@@ -375,6 +548,18 @@ function Game() {
         <Container className="w-360px flex-shrink-0 m-3 p-3 bg-secondary bd-pink-fuzz rounded">
           <h3 className="text-center mb-3">Members</h3>
           {memberList}
+          {session && (
+            <div>
+              Status: &nbsp;
+              <span className="bg-primary">No Info</span>&nbsp;
+              <span className="bg-success">RSVPed</span>&nbsp;
+              <span className="bg-warning">Pending</span>&nbsp;
+              <span className="bg-dark" style={{ color: "white" }}>
+                Can't Come
+              </span>
+              &nbsp;
+            </div>
+          )}
           <div className="mt-3">
             {isAdmin && (
               <>
@@ -391,7 +576,7 @@ function Game() {
                     }}
                     className="w-100 btn-primary border-0"
                   >
-                    View Leaderboard
+                    Confirm Leaderboard
                   </Button>
                 ) : (
                   <Button
@@ -451,7 +636,7 @@ function Game() {
           <div ref={messageBoardEnd} />
         </Container>
       </div>
-    </>
+    </div>
   );
 }
 

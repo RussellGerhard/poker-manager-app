@@ -3,11 +3,14 @@ import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 // Hooks
-import { useState, useLayoutEffect } from "react";
+import { useState, useLayoutEffect, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useErrorContext } from "../contexts/ErrorContext";
 
 function ChangeEmail() {
+  // Refs
+  const emailInput = useRef();
+
   // State
   const [disableSubmit, setDisableSubmit] = useState(false);
 
@@ -51,6 +54,10 @@ function ChangeEmail() {
   }
 
   // Effects
+  useEffect(() => {
+    emailInput.current.focus();
+  }, []);
+
   useLayoutEffect(() => {
     setErrors([]);
   }, []);
@@ -61,7 +68,7 @@ function ChangeEmail() {
       <Form onSubmit={changeEmail}>
         <Form.Group className="mb-3" controlId="new-email">
           <Form.Label>New Email</Form.Label>
-          <Form.Control type="email" placeholder="New Email" />
+          <Form.Control ref={emailInput} type="email" placeholder="New Email" />
         </Form.Group>
 
         <Button

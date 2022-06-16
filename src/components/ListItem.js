@@ -6,9 +6,12 @@ import { Link } from "react-router-dom";
 // If action is a link, then actionTo is the destination
 // If action is an API call, then apiActionCallback is called
 function ListItem(props) {
+  const borderVariant = props.borderVariant
+    ? props.borderVariant
+    : "border-primary";
   return (
     <>
-      <div className="my-2 border border-2 border-primary">
+      <div className={`my-2 border shadow border-3 ${borderVariant}`}>
         <div
           className={`p-2 d-flex justify-content-between mt-2 ${
             props.message ? "border-bottom-0" : ""
@@ -30,7 +33,7 @@ function ListItem(props) {
           <div>
             {props.text && (
               <div
-                className={`txt-lg ${props.shadow ? "text-shadow" : ""} ${
+                className={`txt-lg ${props.textShadow ? "text-shadow" : ""} ${
                   props.smallText ? "txt-md" : ""
                 }`}
                 style={{

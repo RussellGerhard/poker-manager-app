@@ -6,7 +6,7 @@ import Logo from "./Logo";
 import { Link, Navigate } from "react-router-dom";
 // Hooks
 import { useLocation, useNavigate } from "react-router-dom";
-import { useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState, useRef, useEffect } from "react";
 import { useAuthContext } from "../contexts/AuthContext";
 import { useErrorContext } from "../contexts/ErrorContext";
 import { useAlertContext } from "../contexts/AlertContext";
@@ -14,6 +14,9 @@ import { useAlertContext } from "../contexts/AlertContext";
 function LogIn() {
   // Location state
   const { state } = useLocation();
+
+  // Refs
+  const emailInput = useRef();
 
   // State
   const [disableLogIn, setDisableLogIn] = useState(false);
@@ -74,6 +77,10 @@ function LogIn() {
   }
 
   // Effects
+  useEffect(() => {
+    emailInput.current.focus();
+  }, []);
+
   useLayoutEffect(() => {
     if (state) setAlert(state.alert);
     setErrors([]);
@@ -101,7 +108,7 @@ function LogIn() {
       <Form onSubmit={logUserIn} className="mt-4">
         <Form.Group className="mb-3" controlId="email">
           <Form.Label>Email Address</Form.Label>
-          <Form.Control type="email" placeholder="Email" />
+          <Form.Control ref={emailInput} type="email" placeholder="Email" />
         </Form.Group>
 
         <Form.Group controlId="password">

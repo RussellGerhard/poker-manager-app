@@ -4,6 +4,7 @@ import he from "he";
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
 import ListItem from "./ListItem";
+import Loading from "./Loading";
 // Hooks
 import { useState, useEffect, useLayoutEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -16,6 +17,7 @@ function Profile() {
   const { state } = useLocation();
 
   // State
+  const [loading, setLoading] = useState([]);
   const [notifications, setNotifications] = useState([]);
 
   // Context
@@ -70,24 +72,25 @@ function Profile() {
     });
   }
 
+  async function fetchNotifications() {
+    const result = await fetch("http://localhost:3001/api/notifications", {
+      method: "GET",
+      credentials: "include",
+    });
+
+    const res = await result.json();
+
+    if (res.status === "error") {
+      setErrors(res.errors);
+    } else {
+      setNotifications(res.notifications);
+    }
+    setLoading(false);
+  }
+
   // Effects
   useEffect(() => {
     // Fetch notifications for this user
-    async function fetchNotifications() {
-      const result = await fetch("http://localhost:3001/api/notifications", {
-        method: "GET",
-        credentials: "include",
-      });
-
-      const res = await result.json();
-
-      if (res.status === "error") {
-        setErrors(res.errors);
-      } else {
-        setNotifications(res.notifications);
-      }
-    }
-
     fetchNotifications();
   }, []);
 
@@ -100,19 +103,23 @@ function Profile() {
   }, []);
 
   // Optional JSX for render
-  const NotificationList = notifications.map((notif) => {
+  const notificationList = notifications.map((notif) => {
     var action;
     var apiEndpoint;
+    var secondAction;
+    var secondApiEndpoint;
     // Check if notification has an action associated with it
     if (notif.label === "Game Invite") {
       action = "Join";
       apiEndpoint = "join_game";
     } else if (notif.label === "Session Invite") {
-      action = "RSVP";
-      apiEndpoint = "rsvp_game";
+      action = "Accept";
+      apiEndpoint = "member_accept_rsvp";
+      secondAction = "Decline";
+      secondApiEndpoint = "member_decline_rsvp";
     }
     // Generate function to call when notification's action is clicked
-    if (apiEndpoint === "join_game" || apiEndpoint === "rsvp_game") {
+    if (apiEndpoint === "join_game" || apiEndpoint === "member_accept_rsvp") {
       var apiFunction = async function () {
         const response = await fetch(
           `http://localhost:3001/api/${apiEndpoint}`,
@@ -135,17 +142,37 @@ function Profile() {
           setErrors(res.errors);
           return;
         } else if (notif.label === "Game Invite") {
-          navigate(`/games/${notif.game}`, {
-            state: {
-              alert: `Welcome to the game, ${user.username}`,
-            },
-          });
+          setAlert("Successfully joined game");
+          fetchNotifications();
         } else {
-          navigate("/profile", {
-            state: {
-              alerts: `Successfully RSVPed for ${res.game}`,
+          setAlert(`Successfully RSVPed for ${res.game}`);
+          fetchNotifications();
+        }
+      };
+    }
+    if (secondApiEndpoint === "member_decline_rsvp") {
+      var secondApiFunction = async function () {
+        const response = await fetch(
+          `http://localhost:3001/api/${secondApiEndpoint}`,
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
             },
-          });
+            body: JSON.stringify({
+              gameId: notif.game,
+            }),
+          }
+        );
+
+        const res = await response.json();
+
+        if (res.status === "error") {
+          setErrors(res.errors);
+        } else {
+          setAlert(`You declined to RSVP for ${res.game}`);
+          fetchNotifications();
         }
       };
     }
@@ -167,28 +194,29 @@ function Profile() {
         message={he.decode(notif.message)}
         action={action}
         apiCallback={apiFunction}
+        secondAction={secondAction}
+        secondApiCallback={secondApiFunction}
       />
     );
   });
 
   // Render
-  return (
+  return loading ? (
+    <Loading />
+  ) : (
     <>
       <h1 className="text-primary text-center mt-4">
         {user.username}'s Account
       </h1>
       <div className="d-flex flex-wrap justify-content-around align-items-start">
-        <Container className="notif-box flex-shrink-0 m-3 p-3 bg-secondary bd-pink-fuzz rounded">
+        <Container className="w-360px m-3 p-3 bg-secondary bd-pink-fuzz rounded">
           <h3 className="text-center mb-3">Notifications</h3>
-          {NotificationList}
-          <ListItem
-            label="Invite"
-            action="Accept"
-            actionTo="/"
-            secondAction="Decline"
-            secondActionTo="/"
-            message="RG1 asked you to RSVP for a session of their poker game, My Game, at TIME on DATE"
-          />
+
+          {notificationList.length === 0 ? (
+            <ListItem label="No notifications yet!" />
+          ) : (
+            notificationList
+          )}
           <Button
             onClick={clearNotifications}
             className="w-100 mt-2 btn-primary border-0"
@@ -196,7 +224,7 @@ function Profile() {
             Clear Notifications
           </Button>
         </Container>
-        <Container className="w-360px flex-shrink-0 m-3 p-3 bg-secondary bd-pink-fuzz rounded">
+        <Container className="w-360px m-3 p-3 bg-secondary bd-pink-fuzz rounded">
           <h3 className="text-center mb-3">Manage Account</h3>
           <Button onClick={navChangeEmail} className="w-100 mb-2">
             Change Email

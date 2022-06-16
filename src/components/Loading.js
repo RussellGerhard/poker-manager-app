@@ -1,10 +1,14 @@
-import Container from "react-bootstrap/esm/Container";
+import Spinner from "react-bootstrap/Spinner";
 
 function Loading() {
   return (
-    <Container>
-      <h1 className="text-light">LOADING...</h1>
-    </Container>
+    <div className="d-flex p-5 align-items-center justify-content-center position-relative">
+      <Spinner
+        className="position-fixed"
+        animation="grow"
+        variant="secondary"
+      />
+    </div>
   );
 }
 

@@ -22,14 +22,14 @@ function AlertErrorWrapper({ children }) {
 
   // Effects
   useEffect(() => {
-    if (errorList.length != 0) {
+    if (errorList.length != 0 || alert) {
       errorListStart.current.scrollIntoView({
         block: "start",
         inline: "nearest",
         behavior: "smooth",
       });
     }
-  }, [errors]);
+  }, [errors, alert]);
 
   // Optional JSX for render
   const errorList = errors.map((error) => (
@@ -44,6 +44,7 @@ function AlertErrorWrapper({ children }) {
   return (
     <div className="d-flex justify-content-center align-items-center cust-min-height">
       <div>
+        <div ref={errorListStart}>{errorList}</div>
         {alert && (
           <Alert
             message={alert}
@@ -52,7 +53,6 @@ function AlertErrorWrapper({ children }) {
             }}
           />
         )}
-        <div ref={errorListStart}>{errorList}</div>
         {children}
       </div>
     </div>

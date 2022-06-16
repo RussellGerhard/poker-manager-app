@@ -5,7 +5,7 @@ import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 // Hooks
-import { useState, useLayoutEffect } from "react";
+import { useState, useLayoutEffect, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useErrorContext } from "../contexts/ErrorContext";
 
@@ -13,6 +13,9 @@ function GameForm(props) {
   // Location state
   const { state } = useLocation();
   const game = state ? state.game : null;
+
+  // Refs
+  const nameInput = useRef();
 
   // State
   const [disableSubmit, setDisableSubmit] = useState(false);
@@ -68,6 +71,10 @@ function GameForm(props) {
   }
 
   // Effects
+  useEffect(() => {
+    nameInput.current.focus();
+  }, []);
+
   useLayoutEffect(() => {
     setErrors([]);
   }, []);
@@ -82,6 +89,7 @@ function GameForm(props) {
         <Form.Group className="mb-2" controlId="name">
           <Form.Label className="mb-1">Name*</Form.Label>
           <Form.Control
+            ref={nameInput}
             type="text"
             placeholder="Poker Night"
             defaultValue={game ? he.decode(game.name) : ""}

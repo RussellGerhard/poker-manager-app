@@ -21,10 +21,12 @@ import Game from "./components/Game";
 import AddMember from "./components/AddMember";
 import PageNotFound from "./components/PageNotFound";
 import SessionCashier from "./components/SessionCashier";
+import PasswordReset from "./components/PasswordReset";
 // Contexts
 import { AuthContextProvider } from "./contexts/AuthContext";
 import { ErrorContextProvider } from "./contexts/ErrorContext";
 import { AlertContextProvider } from "./contexts/AlertContext";
+import ForgotPassword from "./components/ForgotPassword";
 
 function App() {
   // Last path is for 404 (if nothing else matches, URL is not found)
@@ -209,6 +211,16 @@ function App() {
                       <AddMember />
                     </PrivateRoute>
                   }
+                />
+                <Route
+                  path="forgot_password"
+                  exact
+                  element={<ForgotPassword />}
+                />
+                <Route
+                  path="password_reset/:token"
+                  exact
+                  element={<PasswordReset />}
                 />
                 <Route path="*" element={<PageNotFound />} />
               </Routes>

@@ -26,14 +26,12 @@ function Home() {
 
   return (
     <div className="mw-1200px">
-      <Logo width="200" />
+      <div className="mt-4">
+        <Logo width="200" />
+      </div>
       <Container className="my-3 p-3 mw-1200px bg-pink bd-pink-fuzz rounded txt-lg text-center">
         <div>
           HomeGame is a hub for you and your friends to organize poker games.
-        </div>
-        <div>
-          Create a game to get started managing invites and keeping track of
-          results!
         </div>
       </Container>
     </div>

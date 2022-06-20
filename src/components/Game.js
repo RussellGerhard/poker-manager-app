@@ -4,7 +4,7 @@ import he from "he";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import CloseButton from "react-bootstrap/CloseButton";
-import Container from "react-bootstrap/esm/Container";
+import Container from "react-bootstrap/Container";
 import ListItem from "./ListItem";
 import Loading from "./Loading";
 // Hooks
@@ -45,14 +45,14 @@ function Game() {
 
   // Functions
   async function fetchGame() {
-    const result = await fetch(
+    const response = await fetch(
       `http://localhost:3001/api/games/${params.gameId}`,
       {
         method: "GET",
         credentials: "include",
       }
     );
-    const res = await result.json();
+    const res = await response.json();
 
     if (res.status === "error") {
       setErrors(res.errors);
@@ -64,14 +64,14 @@ function Game() {
   }
 
   async function fetchPosts() {
-    const result = await fetch(
+    const response = await fetch(
       `http://localhost:3001/api/posts/${params.gameId}`,
       {
         method: "GET",
         credentials: "include",
       }
     );
-    const res = await result.json();
+    const res = await response.json();
 
     if (res.status === "error") {
       setErrors(res.errors);
@@ -316,6 +316,7 @@ function Game() {
         const profit_disp =
           profit >= 0 ? `$${profit}` : `-$${Math.abs(profit).toFixed(2)}`;
         const profit_color =
+          // eslint-disable-next-line eqeqeq
           profit == 0 ? "cyan" : profit > 0 ? "#66ff00" : "#ff3131";
 
         var secondAction;
@@ -520,16 +521,16 @@ function Game() {
                         Edit Session
                       </Button>
                       <Button
-                        onClick={navDeleteSession}
+                        onClick={navSessionCashier}
                         className="w-100 mb-2 btn-primary border-0"
                       >
-                        Delete Session
+                        Session Cashier
                       </Button>
                       <Button
-                        onClick={navSessionCashier}
+                        onClick={navDeleteSession}
                         className="w-100 btn-primary border-0"
                       >
-                        Session Cashier
+                        Delete Session
                       </Button>
                     </>
                   ) : (

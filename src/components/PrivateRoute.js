@@ -19,12 +19,7 @@ function PrivateRoute({ children }) {
     <Navigate
       to="/login"
       state={{
-        alerts: [
-          {
-            key: "requireAuthAlert",
-            message: "You must be logged in to view that page",
-          },
-        ],
+        alert: "You must be logged in to view that page",
       }}
     />
   );

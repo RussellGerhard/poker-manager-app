@@ -15,10 +15,14 @@ function GameForm(props) {
   const game = state ? state.game : null;
 
   // Refs
-  const nameInput = useRef();
+  const nameInput = useRef(null);
 
   // State
   const [disableSubmit, setDisableSubmit] = useState(false);
+  const [venmoEnabled, setVenmoEnabled] = useState(
+    game ? game.venmoEnabled : false
+  );
+  const [venmoUsername, setVenmoUsername] = useState(null);
 
   // Contexts
   const { setErrors } = useErrorContext();
@@ -27,6 +31,28 @@ function GameForm(props) {
   const navigate = useNavigate();
 
   // Functions
+  function toggleVenmoEnabled() {
+    setVenmoEnabled(!venmoEnabled);
+  }
+
+  async function getVenmoUsername(e) {
+    const response = await fetch("http://localhost:3001/api/venmo_username", {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const res = await response.json();
+
+    if (res.status === "error") {
+      setErrors(res.errors);
+    } else {
+      setVenmoUsername(res.venmoUsername);
+    }
+  }
+
   async function submitGameForm(e) {
     e.preventDefault();
 
@@ -37,7 +63,22 @@ function GameForm(props) {
     const name = e.target[0].value;
     const game_type = e.target[1].value;
     const stakes = e.target[2].value;
+    const venmoUsername = venmoEnabled ? e.target[4].value : null;
     const gameId = game ? game._id : null;
+
+    // If venmoEnabled, check that venmoUsername is provided
+    if (venmoEnabled) {
+      if (venmoUsername.trim() === "") {
+        setErrors([
+          {
+            param: "NoBanker",
+            msg: "To enable Venmo, please provide the Venmo username of the banker for the game.",
+          },
+        ]);
+        setDisableSubmit(false);
+        return;
+      }
+    }
 
     // Send info to backend and await response
     const endpoint = props.action === "edit" ? "edit_game" : "create_game";
@@ -51,6 +92,8 @@ function GameForm(props) {
         name,
         game_type,
         stakes,
+        venmoEnabled,
+        venmoUsername,
         gameId,
       }),
     });
@@ -63,7 +106,6 @@ function GameForm(props) {
     // Set errors if necessary
     if (res.status === "error") {
       setErrors(res.errors);
-      return;
     } else {
       navigate(`/games/${res.gameId}`);
       return;
@@ -103,15 +145,43 @@ function GameForm(props) {
             defaultValue={game ? he.decode(game.game_type) : ""}
           />
         </Form.Group>
-        <Form.Group className="mb-1" controlId="stakes">
+        <Form.Group className="mb-2" controlId="stakes">
           <Form.Label className="mb-1">Stakes</Form.Label>
           <Form.Control
             type="text"
             placeholder="0.10 / 0.20"
             defaultValue={game ? he.decode(game.stakes) : ""}
           />
+          <div className="mb-2 mt-1 txt-sm">* Indicates a required field</div>
         </Form.Group>
-        <div className="mb-2 txt-sm">* Indicates a required field</div>
+        <Form.Group className="" controlId="useVenmo">
+          <Form.Label className="mb-1">Enable Venmo</Form.Label>
+          <Form.Check
+            onClick={(e) => {
+              toggleVenmoEnabled();
+              if (!venmoUsername) {
+                getVenmoUsername(e);
+              }
+            }}
+            className="d-inline-block mx-2"
+            defaultChecked={game ? game.venmoEnabled : false}
+          />
+        </Form.Group>
+        {venmoEnabled && (
+          <Form.Group className="mb-2" controlId="game_type">
+            <Form.Label className="mb-1">Banker's Venmo*</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Venmo Username"
+              defaultValue={game?.bankerVenmo}
+            />
+          </Form.Group>
+        )}
+        <div className="txt-xs">
+          Using Venmo automates requests after a poker session is cashed out.
+          Home Game will <strong>never</strong> automatically pay anyone, action
+          is <strong>always</strong> required on the Venmo platform.
+        </div>
         <Button
           className="w-100 mt-2"
           variant="primary"

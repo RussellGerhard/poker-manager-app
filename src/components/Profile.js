@@ -32,7 +32,7 @@ function Profile() {
 
   // Functions
   async function clearNotifications() {
-    const result = await fetch(
+    const response = await fetch(
       "http://localhost:3001/api/clear_notifications",
       {
         method: "POST",
@@ -40,7 +40,7 @@ function Profile() {
       }
     );
 
-    const res = await result.json();
+    const res = await response.json();
 
     if (res.status === "error") {
       setErrors(res.errors);
@@ -73,12 +73,12 @@ function Profile() {
   }
 
   async function fetchNotifications() {
-    const result = await fetch("http://localhost:3001/api/notifications", {
+    const response = await fetch("http://localhost:3001/api/notifications", {
       method: "GET",
       credentials: "include",
     });
 
-    const res = await result.json();
+    const res = await response.json();
 
     if (res.status === "error") {
       setErrors(res.errors);

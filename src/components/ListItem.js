@@ -11,13 +11,15 @@ function ListItem(props) {
     : "border-primary";
   return (
     <>
-      <div className={`my-2 border shadow border-3 ${borderVariant}`}>
+      <div
+        className={`my-2 flex-grow-1 border shadow border-3 ${borderVariant}`}
+      >
         <div
           className={`p-2 d-flex justify-content-between mt-2 ${
             props.message ? "border-bottom-0" : ""
           }`}
         >
-          <div style={{ width: "160px" }}>
+          <div className="flex-grow-1 " style={{ width: "160px" }}>
             {props.isLink && (
               <Link
                 className="txt-lg text-dark text-decoration-underline"
@@ -26,15 +28,13 @@ function ListItem(props) {
                 {props.label}
               </Link>
             )}
-            {!props.isLink && (
-              <div className="txt-lg text-dark">{props.label}</div>
-            )}
+            {!props.isLink && <div className="txt-lg ">{props.label}</div>}
           </div>
-          <div>
+          <div className="d-flex">
             {props.text && (
               <div
                 className={`txt-lg ${props.textShadow ? "text-shadow" : ""} ${
-                  props.smallText ? "txt-md" : ""
+                  props.smallText ? "txt-md pt-1" : ""
                 }`}
                 style={{
                   color: props.textColor,
@@ -45,11 +45,18 @@ function ListItem(props) {
             )}
           </div>
         </div>
-        {props.message && <div className="px-2 pb-2 ">{props.message}</div>}
+        {props.message && (
+          <div
+            className="px-2 pb-2"
+            dangerouslySetInnerHTML={{ __html: props.message }}
+          >
+            {/* {props.message} */}
+          </div>
+        )}
         <div className="p-1">
           {props.actionTo && (
             <Link
-              className="d-flex p-0 px-3 align-items-center btn-primary text-dark rounded-0"
+              className="d-flex p-0 px-3 align-items-center btn-primary rounded-0"
               to={props.actionTo}
               state={props.actionState}
             >
@@ -59,7 +66,7 @@ function ListItem(props) {
           {props.apiCallback && (
             <Button
               onClick={props.apiCallback}
-              className="d-flex w-100 p-0 px-3 align-items-center btn-primary text-dark border-0 rounded-0"
+              className="d-flex w-100 p-0 px-3 align-items-center btn-primary border-0 rounded-0"
             >
               {props.action}
             </Button>
@@ -68,7 +75,7 @@ function ListItem(props) {
         <div className={`p-1 pt-0 ${props.secondAction ? "" : "d-none"}`}>
           {props.secondActionTo && (
             <Link
-              className="d-flex p-0 px-3 align-items-center btn-primary text-dark rounded-0"
+              className="d-flex p-0 px-3 align-items-center btn-primary rounded-0"
               to={props.secondActionTo}
               state={props.secondActionState}
             >
@@ -78,7 +85,7 @@ function ListItem(props) {
           {props.secondApiCallback && (
             <Button
               onClick={props.secondApiCallback}
-              className="d-flex w-100 p-0 px-3 align-items-center btn-primary text-dark border-0 rounded-0"
+              className="d-flex w-100 p-0 px-3 align-items-center btn-primary border-0 rounded-0"
             >
               {props.secondAction}
             </Button>

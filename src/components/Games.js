@@ -118,6 +118,16 @@ function Games() {
     <Container className="w-360px my-3 p-3 bg-secondary bd-pink-fuzz rounded">
       <h3 className="text-center mb-3">Games</h3>
       {gameList.length === 0 ? <ListItem label="No games yet!" /> : gameList}
+      <div className="mt-3">
+        Status: &nbsp;
+        <span className="bg-primary rounded">No Info</span>&nbsp;
+        <span className="bg-success rounded">RSVPed</span>&nbsp;
+        <span className="bg-warning rounded">Pending</span>&nbsp;
+        <span className="bg-dark rounded" style={{ color: "white" }}>
+          Can't Come
+        </span>
+        &nbsp;
+      </div>
       <Button
         onClick={goToCreateGame}
         id="create-game-button"

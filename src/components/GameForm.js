@@ -63,7 +63,9 @@ function GameForm(props) {
     const name = e.target[0].value;
     const game_type = e.target[1].value;
     const stakes = e.target[2].value;
-    const venmoUsername = venmoEnabled ? e.target[4].value : null;
+    const max_buyin = e.target[3].value;
+    const venmoUsername = venmoEnabled ? e.target[5].value : null;
+    const venmoMessage = venmoEnabled ? e.target[6].value : null;
     const gameId = game ? game._id : null;
 
     // If venmoEnabled, check that venmoUsername is provided
@@ -72,7 +74,17 @@ function GameForm(props) {
         setErrors([
           {
             param: "NoBanker",
-            msg: "To enable Venmo, please provide the Venmo username of the banker for the game.",
+            msg: "To enable Venmo, please provide the Venmo username of the banker for the game",
+          },
+        ]);
+        setDisableSubmit(false);
+        return;
+      }
+      if (venmoMessage.trim() === "") {
+        setErrors([
+          {
+            param: "NoMessage",
+            msg: "To enable Venmo, please provide a message under 50 characters for Venmo requests associated with your game",
           },
         ]);
         setDisableSubmit(false);
@@ -92,8 +104,10 @@ function GameForm(props) {
         name,
         game_type,
         stakes,
+        max_buyin,
         venmoEnabled,
         venmoUsername,
+        venmoMessage,
         gameId,
       }),
     });
@@ -134,7 +148,7 @@ function GameForm(props) {
             ref={nameInput}
             type="text"
             placeholder="Poker Night"
-            defaultValue={game ? he.decode(game.name) : ""}
+            defaultValue={game?.name ? he.decode(game.name) : ""}
           />
         </Form.Group>
         <Form.Group className="mb-2" controlId="game_type">
@@ -142,7 +156,7 @@ function GameForm(props) {
           <Form.Control
             type="text"
             placeholder="No Limit Hold Em"
-            defaultValue={game ? he.decode(game.game_type) : ""}
+            defaultValue={game?.game_type ? he.decode(game.game_type) : ""}
           />
         </Form.Group>
         <Form.Group className="mb-2" controlId="stakes">
@@ -150,38 +164,65 @@ function GameForm(props) {
           <Form.Control
             type="text"
             placeholder="0.10 / 0.20"
-            defaultValue={game ? he.decode(game.stakes) : ""}
+            defaultValue={game?.stakes ? he.decode(game.stakes) : ""}
+          />
+        </Form.Group>
+        <Form.Group className="mb-2" controlId="max_buyin">
+          <Form.Label className="mb-1">Max Buy-In</Form.Label>
+          <Form.Control
+            type="text"
+            placeholder="Uncapped"
+            defaultValue={game?.max_buyin ? he.decode(game.max_buyin) : ""}
           />
           <div className="mb-2 mt-1 txt-sm">* Indicates a required field</div>
         </Form.Group>
         <Form.Group className="" controlId="useVenmo">
           <Form.Label className="mb-1">Enable Venmo</Form.Label>
           <Form.Check
-            onClick={(e) => {
+            onChange={(e) => {
               toggleVenmoEnabled();
               if (!venmoUsername) {
                 getVenmoUsername(e);
               }
             }}
             className="d-inline-block mx-2"
-            defaultChecked={game ? game.venmoEnabled : false}
+            checked={venmoEnabled}
           />
         </Form.Group>
         {venmoEnabled && (
-          <Form.Group className="mb-2" controlId="game_type">
-            <Form.Label className="mb-1">Banker's Venmo*</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Venmo Username"
-              defaultValue={game?.bankerVenmo}
-            />
-          </Form.Group>
+          <>
+            <Form.Group className="mb-2" controlId="banker_venmo">
+              <Form.Label className="mb-1">Banker's Venmo*</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Venmo Username"
+                defaultValue={
+                  game?.bankerVenmo ? he.decode(game.bankerVenmo) : ""
+                }
+              />
+            </Form.Group>
+            <div className="txt-xs my-1">
+              Using Venmo automates requests after a poker session is cashed
+              out. Home Game will <strong>never</strong> automatically pay
+              anyone, action is <strong>always</strong> required on the Venmo
+              platform.
+            </div>
+            <Form.Group className="mb-2" controlId="venmo_memo">
+              <Form.Label className="mb-1">Venmo Message*</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Flowers..."
+                defaultValue={
+                  game?.venmoMessage ? he.decode(game.venmoMessage) : ""
+                }
+              />
+            </Form.Group>
+            <div className="txt-xs my-1">
+              Venmo will flag/block requests that mention poker.
+            </div>
+          </>
         )}
-        <div className="txt-xs">
-          Using Venmo automates requests after a poker session is cashed out.
-          Home Game will <strong>never</strong> automatically pay anyone, action
-          is <strong>always</strong> required on the Venmo platform.
-        </div>
+
         <Button
           className="w-100 mt-2"
           variant="primary"

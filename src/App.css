@@ -111,6 +111,22 @@ a {
   }
 }
 
+.home-page-container {
+  max-width: 360px;
+}
+
+@media screen and (min-width: 784px) {
+  .home-page-container {
+    max-width: 784px;
+  }
+}
+
+@media screen and (min-width: 1568px) {
+  .home-page-container {
+    max-width: 1568px;
+  }
+}
+
 .mw-306px {
   max-width: 306px;
 }

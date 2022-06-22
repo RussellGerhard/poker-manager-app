@@ -79,26 +79,24 @@ function AddMember() {
   }, []);
 
   return (
-    <div className="w-360px">
-      <Container className="my-3 p-3 bg-secondary bd-pink-fuzz rounded">
-        <h3 className="text-center mb-3">Add Member</h3>
-        <Form onSubmit={sumbitAddMember}>
-          <Form.Group className="mb-3" controlId="new-username">
-            <Form.Label>Member Username</Form.Label>
-            <Form.Control ref={usernameInput} type="text" />
-          </Form.Group>
+    <Container className="w-360px my-3 p-3 bg-secondary bd-pink-fuzz rounded">
+      <h3 className="text-center mb-3">Add Member</h3>
+      <Form onSubmit={sumbitAddMember}>
+        <Form.Group className="mb-3" controlId="new-username">
+          <Form.Label>Member Username</Form.Label>
+          <Form.Control ref={usernameInput} type="text" />
+        </Form.Group>
 
-          <Button
-            className="w-100"
-            variant="primary"
-            type="submit"
-            disabled={disableSubmit}
-          >
-            Send Invite
-          </Button>
-        </Form>
-      </Container>
-    </div>
+        <Button
+          className="w-100"
+          variant="primary"
+          type="submit"
+          disabled={disableSubmit}
+        >
+          Send Invite
+        </Button>
+      </Form>
+    </Container>
   );
 }
 

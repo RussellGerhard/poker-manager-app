@@ -30,8 +30,6 @@ function SignUp() {
   const navigate = useNavigate();
 
   // Functions
-  const renderToolTip = (props) => {};
-
   async function registerUser(e) {
     // Prevent page refresh
     e.preventDefault();

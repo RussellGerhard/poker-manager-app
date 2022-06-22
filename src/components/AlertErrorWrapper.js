@@ -1,3 +1,5 @@
+// Imports
+import he from "he";
 // Components
 import Alert from "./Alert";
 // Hooks
@@ -12,6 +14,11 @@ function AlertErrorWrapper({ children }) {
   // Context
   const { errors, setErrors } = useErrorContext();
   const { alert, setAlert } = useAlertContext();
+
+  // Check for user session error first (so that private routes will catch on sess expiration)
+  if (errors[0]?.param === "NoUserSession") {
+    window.location.reload();
+  }
 
   // Functions
   function handleErrorRemove(key) {
@@ -47,7 +54,7 @@ function AlertErrorWrapper({ children }) {
         <div ref={errorListStart}>{errorList}</div>
         {alert && (
           <Alert
-            message={alert}
+            message={he.decode(alert)}
             onClose={() => {
               setAlert(null);
             }}

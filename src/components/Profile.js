@@ -3,6 +3,7 @@ import he from "he";
 // Components
 import Container from "react-bootstrap/Container";
 import Button from "react-bootstrap/Button";
+import CloseButton from "react-bootstrap/esm/CloseButton";
 import ListItem from "./ListItem";
 import Loading from "./Loading";
 // Hooks
@@ -31,6 +32,30 @@ function Profile() {
     navigator.languages.length === 0 ? "en-US" : navigator.languages[0];
 
   // Functions
+  async function closeNotification(notifId) {
+    const response = await fetch(
+      "http://localhost:3001/api/delete_notification",
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          notificationId: notifId,
+        }),
+      }
+    );
+
+    const res = await response.json();
+
+    if (res.status === "error") {
+      setErrors(res.errors);
+    } else {
+      setNotifications(notifications.filter((notif) => notif._id !== notifId));
+    }
+  }
+
   async function clearNotifications() {
     const response = await fetch(
       "http://localhost:3001/api/clear_notifications",
@@ -185,18 +210,29 @@ function Profile() {
     }).format(date);
 
     return (
-      <ListItem
-        key={notif.date}
-        label={notif.label}
-        text={formatted_date}
-        textColor="black"
-        smallText={true}
-        message={he.decode(notif.message)}
-        action={action}
-        apiCallback={apiFunction}
-        secondAction={secondAction}
-        secondApiCallback={secondApiFunction}
-      />
+      <div key={notif.date} className="d-flex flex-row justify-context-start">
+        <ListItem
+          label={notif.label}
+          text={formatted_date}
+          textColor="black"
+          smallText={true}
+          message={he.decode(notif.message)}
+          action={action}
+          apiCallback={apiFunction}
+          secondAction={secondAction}
+          secondApiCallback={secondApiFunction}
+        />
+        <div
+          className="my-2 align-self-stretch border border-3 border-start-0 border-primary"
+          style={{ backgroundColor: "#2de2e6", width: "27px" }}
+        >
+          <CloseButton
+            onClick={() => {
+              closeNotification(notif._id);
+            }}
+          />
+        </div>
+      </div>
     );
   });
 
@@ -210,7 +246,7 @@ function Profile() {
       </h1>
       <div className="d-flex flex-wrap justify-content-around align-items-start">
         <Container className="w-360px m-3 p-3 bg-secondary bd-pink-fuzz rounded">
-          <h3 className="text-center mb-3">Notifications</h3>
+          <h3 className="text-center mb-2">Notifications</h3>
 
           {notificationList.length === 0 ? (
             <ListItem label="No notifications yet!" />

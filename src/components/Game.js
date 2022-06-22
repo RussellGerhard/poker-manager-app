@@ -457,11 +457,19 @@ function Game() {
 
   // Game details
   const gameDetails =
-    game?.game_type || game?.stakes ? (
-      <>
-        <div>{he.decode(game?.game_type)}</div>
-        <div>{he.decode(game?.stakes)}</div>
-      </>
+    game?.game_type || game?.stakes || game?.max_buyin ? (
+      <div className="d-flex flex-row justify-content-center">
+        <div className="d-flex flex-column align-items-end">
+          <div>Game:</div>
+          <div>Stakes:</div>
+          <div>Max Buy-In:</div>
+        </div>
+        <div className="mx-3 d-flex flex-column align-items-start">
+          <div>{game?.game_type ? he.decode(game?.game_type) : null}</div>
+          <div>{game?.stakes ? he.decode(game?.stakes) : null}</div>
+          <div>{game?.max_buyin ? he.decode(game?.max_buyin) : null}</div>
+        </div>
+      </div>
     ) : (
       <div>No details yet!</div>
     );
@@ -469,11 +477,18 @@ function Game() {
   // Session details
   const sessionDetails =
     session?.date || session?.time || session?.address ? (
-      <>
-        <div>{he.decode(game.session?.date)}</div>
-        <div>{he.decode(game.session?.time)}</div>
-        <div>{he.decode(game.session?.address)}</div>
-      </>
+      <div className="d-flex flex-row justify-content-center">
+        <div className="d-flex flex-column align-items-end">
+          <div>Date:</div>
+          <div>Time:</div>
+          <div>Address:</div>
+        </div>
+        <div className="mx-3 d-flex flex-column align-items-start">
+          <div>{he.decode(game.session?.date)}</div>
+          <div>{he.decode(game.session?.time)}</div>
+          <div>{he.decode(game.session?.address)}</div>
+        </div>
+      </div>
     ) : (
       <div>No session yet!</div>
     );
@@ -552,10 +567,10 @@ function Game() {
           {session && (
             <div>
               Status: &nbsp;
-              <span className="bg-primary">No Info</span>&nbsp;
-              <span className="bg-success">RSVPed</span>&nbsp;
-              <span className="bg-warning">Pending</span>&nbsp;
-              <span className="bg-dark" style={{ color: "white" }}>
+              <span className="bg-primary rounded">No Info</span>&nbsp;
+              <span className="bg-success rounded">RSVPed</span>&nbsp;
+              <span className="bg-warning rounded">Pending</span>&nbsp;
+              <span className="bg-dark rounded" style={{ color: "white" }}>
                 Can't Come
               </span>
               &nbsp;

@@ -18,22 +18,27 @@ function SessionCashier() {
   const { state } = useLocation();
   const game = state.game;
 
+  // Context
+  const { setErrors } = useErrorContext();
+
   // State
   const [filterValue, setFilterValue] = useState("");
   const [disableSubmit, setDisableSubmit] = useState(false);
   const [players, setPlayers] = useState(
     game.members.filter(
-      (member) => game.session.rsvp_map[member._id] === "accepted"
+      (member) =>
+        game.session.rsvp_map[member._id] === "accepted" &&
+        member._id !== game.admin._id
     )
   );
   const [nonPlayers, setNonPlayers] = useState(
     game.members.filter(
-      (member) => game.session.rsvp_map[member._id] !== "accepted"
+      (member) =>
+        game.session.rsvp_map[member._id] !== "accepted" ||
+        member._id === game.admin._id
     )
   );
-
-  // Context
-  const { setErrors } = useErrorContext();
+  const [cashoutMap, setCashoutMap] = useState({});
 
   // Constants
   const navigate = useNavigate();
@@ -50,15 +55,14 @@ function SessionCashier() {
     e.preventDefault();
     setDisableSubmit(true);
 
-    const player_cashout_map = new Map();
-    var buyin, cashout;
-    for (var i = 0; i < players.length; i++) {
-      // Close button counts in target array of form
-      buyin = e.target[3 * i].value;
-      cashout = e.target[3 * i + 1].value;
-
+    for (var player of players) {
       // Make sure buyin and cashout are numbers
-      if ((!+buyin && buyin !== "0") || (!+cashout && cashout !== "0")) {
+      if (
+        (!+cashoutMap[player._id].buyin &&
+          cashoutMap[player._id].buyin !== "0") ||
+        (!+cashoutMap[player._id].cashout &&
+          cashoutMap[player._id].cashout !== "0")
+      ) {
         setErrors([
           {
             param: "InvalidNumber",
@@ -68,13 +72,7 @@ function SessionCashier() {
         setDisableSubmit(false);
         return;
       }
-
-      player_cashout_map[players[i]._id] = {
-        in: buyin,
-        out: cashout,
-      };
     }
-    setDisableSubmit(false);
 
     const response = await fetch("http://localhost:3001/api/submit_cashout", {
       method: "POST",
@@ -85,7 +83,7 @@ function SessionCashier() {
       body: JSON.stringify({
         gameId: game._id,
         players: players,
-        player_cashout_map: player_cashout_map,
+        player_cashout_map: cashoutMap,
       }),
     });
 
@@ -137,13 +135,15 @@ function SessionCashier() {
     ...dropdownList,
   ];
 
-  const cashoutList = players.map((player) => {
+  const cashoutList = players.map((player, i) => {
     return (
       <MemberCashoutForm
         key={player._id}
+        playerId={player._id}
         player={player}
         playerState={{ players, setPlayers }}
         nonPlayerState={{ nonPlayers, setNonPlayers }}
+        cashoutMapState={{ cashoutMap, setCashoutMap }}
       />
     );
   });

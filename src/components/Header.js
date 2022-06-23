@@ -1,5 +1,3 @@
-// Imports
-// import { useMediaQuery } from "react-responsive";
 // Components
 import Nav from "react-bootstrap/Nav";
 import Dropdown from "react-bootstrap/Dropdown";

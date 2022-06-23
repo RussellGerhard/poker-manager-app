@@ -1,9 +1,11 @@
 // Components
 import Container from "react-bootstrap/Container";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 import Logo from "./Logo";
 // Hooks
 import { useLocation } from "react-router-dom";
-import { useLayoutEffect } from "react";
+import { useLayoutEffect, useState } from "react";
 import { useErrorContext } from "../contexts/ErrorContext";
 import { useAlertContext } from "../contexts/AlertContext";
 
@@ -11,9 +13,46 @@ function Home() {
   // Location state
   var { state } = useLocation();
 
+  // State
+  const [name, setName] = useState("");
+  const [message, setMessage] = useState("");
+  const [disableContactSubmit, setDisableContactSubmit] = useState(false);
+
   // Context
   const { setErrors } = useErrorContext();
   const { setAlert } = useAlertContext();
+
+  // Functions
+  const submitContactForm = async (e) => {
+    e.preventDefault();
+    setDisableContactSubmit(true);
+
+    const response = await fetch(
+      "http://localhost:3001/api/submit_contact_form",
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: name,
+          message: message,
+        }),
+      }
+    );
+
+    const res = await response.json();
+
+    setDisableContactSubmit(false);
+    if (res.status === "error") {
+      setErrors(res.errors);
+    } else {
+      setAlert("Message sent!");
+      setName("");
+      setMessage("");
+    }
+  };
 
   // Effects
   useLayoutEffect(() => {
@@ -26,7 +65,10 @@ function Home() {
 
   return (
     <div className="home-page-container m-3">
-      <div className="d-flex flex-column align-items-center ">
+      <div
+        className="d-flex flex-column align-items-center"
+        style={{ maxWidth: "784px" }}
+      >
         <div>
           <Container
             className="m-3 p-3 bg-pink bd-pink-fuzz rounded txt-lg text-center"
@@ -35,7 +77,7 @@ function Home() {
             <div className="m-3">
               <Logo width="200" />
             </div>
-            <h1 className="text-center mb-3">Home Game</h1>
+            <h1 className="mb-3">Home Game</h1>
           </Container>
         </div>
         <div className="d-flex flex-row flex-wrap justify-content-around">
@@ -67,9 +109,53 @@ function Home() {
                 Optionally send members a Home Game notification with a custom
                 Venmo link for their cashout request
               </li>
-              <li>Auto-update the game's leaderboard on cashout</li>
+              <li>Auto-update the game's leaderboard after cashout</li>
             </ul>
           </Container>
+          <div className="home-page-collapse m-3 p-3 bg-pink bd-pink-fuzz rounded txt-lg text-center ">
+            Home Game is completely free; however, if you'd like to make a
+            donation to the developer, please venmo @RussellGerhard
+          </div>
+          <div className="home-page-collapse m-3 p-3 bg-pink bd-pink-fuzz rounded txt-lg text-center ">
+            <h4 className="mb-3">Contact</h4>
+            <p className="txt-md">
+              If you discover a bug, want a new feature, or just want to get in
+              touch, send me an email!
+            </p>
+            <Form
+              onSubmit={(e) => {
+                submitContactForm(e);
+              }}
+            >
+              <Form.Control
+                onChange={(e) => {
+                  setName(e.target.value);
+                }}
+                className="mb-2"
+                type="name"
+                placeholder="Name"
+                value={name}
+              />
+              <Form.Control
+                onChange={(e) => {
+                  setMessage(e.target.value);
+                }}
+                value={message}
+                className="mb-3"
+                as="textarea"
+                rows={2}
+                placeholder="Message"
+              ></Form.Control>
+              <Button
+                className="w-100"
+                variant="primary"
+                type="submit"
+                disabled={disableContactSubmit}
+              >
+                Submit
+              </Button>
+            </Form>
+          </div>
         </div>
       </div>
     </div>

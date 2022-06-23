@@ -12,7 +12,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useAuthContext } from "../contexts/AuthContext";
 import { useErrorContext } from "../contexts/ErrorContext";
 import { useAlertContext } from "../contexts/AlertContext";
-import { useMediaQuery } from "react-responsive";
 
 function Profile() {
   // Location state
@@ -31,7 +30,6 @@ function Profile() {
   const navigate = useNavigate();
   const locale =
     navigator.languages.length === 0 ? "en-US" : navigator.languages[0];
-  const IS_DESKTOP = useMediaQuery({ query: "(min-width: 800px)" });
 
   // Functions
   async function closeNotification(notifId) {

@@ -32,11 +32,7 @@ const AuthContextProvider = ({ children }) => {
       const response = await fetch(`http://localhost:3001/api/login`, {
         method: "GET",
         credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
       });
-      console.log("Reponse: ", response);
       const res = await response.json();
 
       if (res.loggedIn) {

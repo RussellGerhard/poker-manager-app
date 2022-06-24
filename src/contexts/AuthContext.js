@@ -36,6 +36,7 @@ const AuthContextProvider = ({ children }) => {
           "Content-Type": "application/json",
         },
       });
+      console.log("Reponse: ", response);
       const res = await response.json();
 
       if (res.loggedIn) {
@@ -44,7 +45,11 @@ const AuthContextProvider = ({ children }) => {
       setLoading(false);
     }
 
-    loadUser();
+    try {
+      loadUser();
+    } catch (err) {
+      console.log("NO SERVER RESPONSE");
+    }
   }, []);
 
   return (

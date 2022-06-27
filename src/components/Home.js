@@ -8,6 +8,8 @@ import { useLocation } from "react-router-dom";
 import { useLayoutEffect, useState } from "react";
 import { useErrorContext } from "../contexts/ErrorContext";
 import { useAlertContext } from "../contexts/AlertContext";
+// Constants
+const { REACT_APP_API_ROOT } = process.env;
 
 function Home() {
   // Location state
@@ -27,20 +29,17 @@ function Home() {
     e.preventDefault();
     setDisableContactSubmit(true);
 
-    const response = await fetch(
-      "http://localhost:3001/api/submit_contact_form",
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: name,
-          message: message,
-        }),
-      }
-    );
+    const response = await fetch(`${REACT_APP_API_ROOT}/submit_contact_form`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: name,
+        message: message,
+      }),
+    });
 
     const res = await response.json();
 
@@ -64,14 +63,14 @@ function Home() {
   }, []);
 
   return (
-    <div className="home-page-container m-3">
+    <div className="home-page-container mx-auto my-3">
       <div
         className="d-flex flex-column align-items-center"
         style={{ maxWidth: "784px" }}
       >
         <div>
           <Container
-            className="m-3 p-3 bg-pink bd-pink-fuzz rounded txt-lg text-center"
+            className="mx-auto my-3 p-3 bg-pink bd-pink-fuzz rounded txt-lg text-center"
             style={{ width: "360px" }}
           >
             <div className="m-3">
@@ -82,7 +81,7 @@ function Home() {
         </div>
         <div className="d-flex flex-row flex-wrap justify-content-around">
           <Container
-            className="m-3 p-3 bg-pink bd-pink-fuzz rounded txt-lg "
+            className="mx-auto my-3 p-3 bg-pink bd-pink-fuzz rounded txt-lg "
             style={{ width: "360px" }}
           >
             <h4 className="text-center mb-3">Game Admin Console</h4>
@@ -95,7 +94,7 @@ function Home() {
             </ul>
           </Container>
           <Container
-            className="m-3 p-3 bg-pink bd-pink-fuzz rounded txt-lg"
+            className="mx-auto my-3 p-3 bg-pink bd-pink-fuzz rounded txt-lg"
             style={{ width: "360px" }}
           >
             <h4 className="text-center mb-3">Venmo-Enabled Cashout</h4>
@@ -112,11 +111,11 @@ function Home() {
               <li>Auto-update the game's leaderboard after cashout</li>
             </ul>
           </Container>
-          <div className="home-page-collapse m-3 p-3 bg-pink bd-pink-fuzz rounded txt-lg text-center ">
+          <div className="home-page-collapse mx-auto my-3 p-3 bg-pink bd-pink-fuzz rounded txt-lg text-center ">
             Home Game is completely free; however, if you'd like to make a
             donation to the developer, please venmo @RussellGerhard
           </div>
-          <div className="home-page-collapse m-3 p-3 bg-pink bd-pink-fuzz rounded txt-lg text-center ">
+          <div className="home-page-collapse mx-auto my-3 p-3 bg-pink bd-pink-fuzz rounded txt-lg text-center ">
             <h4 className="mb-3">Contact</h4>
             <p className="txt-md">
               If you discover a bug, want a new feature, or just want to get in

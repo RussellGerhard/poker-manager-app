@@ -5,18 +5,17 @@ import Form from "react-bootstrap/Form";
 import Logo from "./Logo";
 import { Navigate } from "react-router-dom";
 // Hooks
-import { useEffect, useLayoutEffect, useState, useRef } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuthContext } from "../contexts/AuthContext";
 import { useErrorContext } from "../contexts/ErrorContext";
 import { useAlertContext } from "../contexts/AlertContext";
+// Constants
+const { REACT_APP_API_ROOT } = process.env;
 
 function SignUp() {
   // Location state
   const { state } = useLocation();
-
-  // Refs
-  const usernameInput = useRef();
 
   // State
   const [disableSignUp, setDisableSignUp] = useState(false);
@@ -44,7 +43,7 @@ function SignUp() {
     const password_conf = e.target[3].value;
 
     // Send info to backend and await response
-    const response = await fetch("http://localhost:3001/api/signup", {
+    const response = await fetch(`${REACT_APP_API_ROOT}/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -73,10 +72,6 @@ function SignUp() {
   }
 
   // Effects
-  useEffect(() => {
-    usernameInput.current.focus();
-  }, []);
-
   useLayoutEffect(() => {
     if (state && state.alert) setAlert(state.alert);
     setErrors([]);
@@ -97,11 +92,7 @@ function SignUp() {
       <Form onSubmit={registerUser} className="mt-4">
         <Form.Group className="mb-3" controlId="username">
           <Form.Label>Username</Form.Label>
-          <Form.Control
-            ref={usernameInput}
-            type="text"
-            placeholder="Username"
-          />
+          <Form.Control type="text" placeholder="Username" />
           <div className="txt-xs m-1">
             Use letters, numbers, and underscores
           </div>

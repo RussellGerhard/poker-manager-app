@@ -6,6 +6,8 @@ import Form from "react-bootstrap/Form";
 import { useState, useLayoutEffect, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useErrorContext } from "../contexts/ErrorContext";
+// Constants
+const { REACT_APP_API_ROOT } = process.env;
 
 function ChangePassword() {
   // Refs
@@ -42,7 +44,7 @@ function ChangePassword() {
       return;
     }
 
-    const response = await fetch("http://localhost:3001/api/change_password", {
+    const response = await fetch(`${REACT_APP_API_ROOT}/change_password`, {
       method: "POST",
       credentials: "include",
       headers: {

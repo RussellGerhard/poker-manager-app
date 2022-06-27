@@ -8,6 +8,8 @@ import Form from "react-bootstrap/Form";
 import { useState, useLayoutEffect, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useErrorContext } from "../contexts/ErrorContext";
+// Constants
+const { REACT_APP_API_ROOT } = process.env;
 
 function GameForm(props) {
   // Location state
@@ -36,7 +38,7 @@ function GameForm(props) {
   }
 
   async function getVenmoUsername(e) {
-    const response = await fetch("http://localhost:3001/api/venmo_username", {
+    const response = await fetch(`${REACT_APP_API_ROOT}/venmo_username`, {
       method: "GET",
       credentials: "include",
       headers: {
@@ -94,7 +96,7 @@ function GameForm(props) {
 
     // Send info to backend and await response
     const endpoint = props.action === "edit" ? "edit_game" : "create_game";
-    const response = await fetch(`http://localhost:3001/api/${endpoint}`, {
+    const response = await fetch(`${REACT_APP_API_ROOT}/${endpoint}`, {
       method: "POST",
       credentials: "include",
       headers: {

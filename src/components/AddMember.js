@@ -7,6 +7,8 @@ import { useState, useLayoutEffect, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useErrorContext } from "../contexts/ErrorContext";
 import { useAlertContext } from "../contexts/AlertContext";
+// Constants
+const { REACT_APP_API_ROOT } = process.env;
 
 function AddMember() {
   // Location state
@@ -37,7 +39,7 @@ function AddMember() {
     const username = e.target[0].value;
 
     // Send to backend
-    const response = await fetch("http://localhost:3001/api/add_member", {
+    const response = await fetch(`${REACT_APP_API_ROOT}/add_member`, {
       method: "POST",
       credentials: "include",
       headers: {

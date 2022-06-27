@@ -9,6 +9,8 @@ import MemberCashoutForm from "./MemberCashoutForm";
 import { useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useErrorContext } from "../contexts/ErrorContext";
+// Constants
+const { REACT_APP_API_ROOT } = process.env;
 
 function SessionCashier() {
   // Refs
@@ -74,7 +76,7 @@ function SessionCashier() {
       }
     }
 
-    const response = await fetch("http://localhost:3001/api/submit_cashout", {
+    const response = await fetch(`${REACT_APP_API_ROOT}/submit_cashout`, {
       method: "POST",
       credentials: "include",
       headers: {

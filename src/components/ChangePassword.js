@@ -7,6 +7,8 @@ import { Link } from "react-router-dom";
 import { useState, useLayoutEffect, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useErrorContext } from "../contexts/ErrorContext";
+// Constants
+const { REACT_APP_API_ROOT } = process.env;
 
 function ChangePassword() {
   // Refs
@@ -44,7 +46,7 @@ function ChangePassword() {
     }
 
     const psw_check_response = await fetch(
-      "http://localhost:3001/api/password_check",
+      `${REACT_APP_API_ROOT}/password_check`,
       {
         method: "POST",
         credentials: "include",
@@ -72,7 +74,7 @@ function ChangePassword() {
       return;
     }
 
-    const response = await fetch("http://localhost:3001/api/change_password", {
+    const response = await fetch(`${REACT_APP_API_ROOT}/change_password`, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -107,25 +109,29 @@ function ChangePassword() {
   }, []);
 
   return (
-    <Container className="my-3 p-3 bg-secondary bd-pink-fuzz rounded">
+    <Container
+      className="mx-auto my-3 p-3 bg-secondary bd-pink-fuzz rounded"
+      style={{ width: "360px" }}
+    >
       <h3 className="text-center mb-3">Change Password</h3>
       <Form onSubmit={changePassword}>
         <Form.Group className="mb-3" controlId="new-password">
-          <Form.Label>New Password</Form.Label>
-          <Form.Control ref={newPasswordInput} type="password" />
+          <Form.Control
+            ref={newPasswordInput}
+            type="password"
+            placeholder="New Password"
+          />
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="new-password-confirm">
+          <Form.Control type="password" placeholder="Confirm New Password" />
           <div className="txt-xs m-1">
             Use 8 to 20 characters with a mix of letters, numbers, and symbols
           </div>
         </Form.Group>
 
-        <Form.Group className="mb-3" controlId="new-password-confirm">
-          <Form.Label>Comfirm New Password</Form.Label>
-          <Form.Control type="password" />
-        </Form.Group>
-
         <Form.Group className="" controlId="password">
-          <Form.Label>Old Password</Form.Label>
-          <Form.Control type="password" />
+          <Form.Control type="password" placeholder="Old Password" />
         </Form.Group>
         <Link className="m-1 mt-0 txt-sm" to="/forgot_password">
           Forgot Password?

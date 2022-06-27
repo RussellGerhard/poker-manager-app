@@ -6,6 +6,8 @@ import Form from "react-bootstrap/Form";
 import { useState, useLayoutEffect, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useErrorContext } from "../contexts/ErrorContext";
+// Constants
+const { REACT_APP_API_ROOT } = process.env;
 
 function ChangeEmail() {
   // Refs
@@ -27,7 +29,7 @@ function ChangeEmail() {
 
     const new_email = e.target[0].value;
 
-    const response = await fetch("http://localhost:3001/api/change_email", {
+    const response = await fetch(`${REACT_APP_API_ROOT}/change_email`, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -63,11 +65,13 @@ function ChangeEmail() {
   }, []);
 
   return (
-    <Container className="my-3 p-3 bg-secondary bd-pink-fuzz rounded">
+    <Container
+      className="mx-auto my-3 p-3 bg-secondary bd-pink-fuzz rounded"
+      style={{ width: "360px" }}
+    >
       <h3 className="text-center mb-3">Change Email</h3>
       <Form onSubmit={changeEmail}>
         <Form.Group className="mb-3" controlId="new-email">
-          <Form.Label>New Email</Form.Label>
           <Form.Control ref={emailInput} type="email" placeholder="New Email" />
         </Form.Group>
 

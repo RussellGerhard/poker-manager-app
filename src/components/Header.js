@@ -8,6 +8,8 @@ import { useLayoutEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../contexts/AuthContext";
 import { useErrorContext } from "../contexts/ErrorContext";
+// Constants
+const { REACT_APP_API_ROOT } = process.env;
 
 function NavigationMenu() {
   // In accordance with react-boostrap md breakpoint
@@ -23,7 +25,7 @@ function NavigationMenu() {
   // Functions
   async function logUserOut(e) {
     // Make api call to logout
-    const response = await fetch("http://localhost:3001/api/logout", {
+    const response = await fetch(`${REACT_APP_API_ROOT}/logout`, {
       method: "POST",
       credentials: "include",
       headers: {

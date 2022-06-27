@@ -7,7 +7,7 @@ function Alert(props) {
   const alert = useRef(null);
 
   return (
-    <div className="position-relative my-4" ref={alert}>
+    <div className="position-relative mx-3 my-4" ref={alert}>
       <div
         className={`${
           props.warning

@@ -7,6 +7,8 @@ import { useState, useLayoutEffect, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useErrorContext } from "../contexts/ErrorContext";
 import { useAuthContext } from "../contexts/AuthContext";
+// Constants
+const { REACT_APP_API_ROOT } = process.env;
 
 function ChangeUsername() {
   // Refs
@@ -43,7 +45,7 @@ function ChangeUsername() {
       return;
     }
 
-    const response = await fetch("http://localhost:3001/api/change_username", {
+    const response = await fetch(`${REACT_APP_API_ROOT}/change_username`, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -58,6 +60,7 @@ function ChangeUsername() {
 
     if (res.status === "error") {
       setErrors(res.errors);
+      setDisableSubmit(false);
     } else {
       setUser(res.user);
       navigate("/profile", {
@@ -78,15 +81,17 @@ function ChangeUsername() {
   }, []);
 
   return (
-    <Container className="my-3 p-3 bg-secondary bd-pink-fuzz rounded">
+    <Container
+      className="mx-auto my-3 p-3 bg-secondary bd-pink-fuzz rounded"
+      style={{ width: "360px" }}
+    >
       <h3 className="text-center mb-3">Change Username</h3>
       <Form onSubmit={changeUsername}>
         <Form.Group className="mb-3" controlId="new-username">
-          <Form.Label>New Username</Form.Label>
           <Form.Control
             ref={usernameInput}
             type="text"
-            placeholder="Poker_Fan123"
+            placeholder="New Username"
           />
           <div className="txt-xs m-1 mb-0">
             Use letters, numbers, and underscores
@@ -94,8 +99,7 @@ function ChangeUsername() {
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="new-username-confirm">
-          <Form.Label>Comfirm Username</Form.Label>
-          <Form.Control type="text" placeholder="Poker_Fan123" />
+          <Form.Control type="text" placeholder="Confirm New Username" />
         </Form.Group>
 
         <Button

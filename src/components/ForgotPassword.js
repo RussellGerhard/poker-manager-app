@@ -6,6 +6,8 @@ import Form from "react-bootstrap/Form";
 import { useState, useLayoutEffect, useEffect, useRef } from "react";
 import { useErrorContext } from "../contexts/ErrorContext";
 import { useAlertContext } from "../contexts/AlertContext";
+// Constants
+const { REACT_APP_API_ROOT } = process.env;
 
 function ForgotPassword() {
   //Refs
@@ -30,18 +32,15 @@ function ForgotPassword() {
       setDisableSubmit(false);
     }
 
-    const response = await fetch(
-      "http://localhost:3001/api/send_password_link",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: email,
-        }),
-      }
-    );
+    const response = await fetch(`${REACT_APP_API_ROOT}/send_password_link`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email,
+      }),
+    });
 
     const res = await response.json();
 

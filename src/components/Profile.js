@@ -12,6 +12,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useAuthContext } from "../contexts/AuthContext";
 import { useErrorContext } from "../contexts/ErrorContext";
 import { useAlertContext } from "../contexts/AlertContext";
+// Constants
+const { REACT_APP_API_ROOT } = process.env;
 
 function Profile() {
   // Location state
@@ -33,19 +35,16 @@ function Profile() {
 
   // Functions
   async function closeNotification(notifId) {
-    const response = await fetch(
-      "http://localhost:3001/api/delete_notification",
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          notificationId: notifId,
-        }),
-      }
-    );
+    const response = await fetch(`${REACT_APP_API_ROOT}/delete_notification`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        notificationId: notifId,
+      }),
+    });
 
     const res = await response.json();
 
@@ -57,13 +56,10 @@ function Profile() {
   }
 
   async function clearNotifications() {
-    const response = await fetch(
-      "http://localhost:3001/api/clear_notifications",
-      {
-        method: "POST",
-        credentials: "include",
-      }
-    );
+    const response = await fetch(`${REACT_APP_API_ROOT}/clear_notifications`, {
+      method: "POST",
+      credentials: "include",
+    });
 
     const res = await response.json();
 
@@ -98,7 +94,7 @@ function Profile() {
   }
 
   async function fetchNotifications() {
-    const response = await fetch("http://localhost:3001/api/notifications", {
+    const response = await fetch(`${REACT_APP_API_ROOT}/notifications`, {
       method: "GET",
       credentials: "include",
     });
@@ -146,19 +142,16 @@ function Profile() {
     // Generate function to call when notification's action is clicked
     if (apiEndpoint === "join_game" || apiEndpoint === "member_accept_rsvp") {
       var apiFunction = async function () {
-        const response = await fetch(
-          `http://localhost:3001/api/${apiEndpoint}`,
-          {
-            method: "POST",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              gameId: notif.game,
-            }),
-          }
-        );
+        const response = await fetch(`${REACT_APP_API_ROOT}/${apiEndpoint}`, {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            gameId: notif.game,
+          }),
+        });
 
         const res = await response.json();
 
@@ -178,7 +171,7 @@ function Profile() {
     if (secondApiEndpoint === "member_decline_rsvp") {
       var secondApiFunction = async function () {
         const response = await fetch(
-          `http://localhost:3001/api/${secondApiEndpoint}`,
+          `${REACT_APP_API_ROOT}/${secondApiEndpoint}`,
           {
             method: "POST",
             credentials: "include",

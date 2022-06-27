@@ -13,6 +13,8 @@ import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { useAuthContext } from "../contexts/AuthContext";
 import { useErrorContext } from "../contexts/ErrorContext";
 import { useAlertContext } from "../contexts/AlertContext";
+// Constants
+const { REACT_APP_API_ROOT } = process.env;
 
 function Game() {
   // Location state
@@ -46,7 +48,7 @@ function Game() {
   // Functions
   async function fetchGame() {
     const response = await fetch(
-      `http://localhost:3001/api/games/${params.gameId}`,
+      `${REACT_APP_API_ROOT}/games/${params.gameId}`,
       {
         method: "GET",
         credentials: "include",
@@ -65,7 +67,7 @@ function Game() {
 
   async function fetchPosts() {
     const response = await fetch(
-      `http://localhost:3001/api/posts/${params.gameId}`,
+      `${REACT_APP_API_ROOT}/posts/${params.gameId}`,
       {
         method: "GET",
         credentials: "include",
@@ -87,7 +89,7 @@ function Game() {
 
     setDisablePostMessage(true);
 
-    const response = await fetch("http://localhost:3001/api/new_message", {
+    const response = await fetch(`${REACT_APP_API_ROOT}/new_message`, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -153,7 +155,7 @@ function Game() {
       return;
     }
 
-    const response = await fetch("http://localhost:3001/api/update_profit", {
+    const response = await fetch(`${REACT_APP_API_ROOT}/update_profit`, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -178,7 +180,7 @@ function Game() {
   async function joinSession(e) {
     e.preventDefault();
 
-    const response = await fetch("http://localhost:3001/api/join_session", {
+    const response = await fetch(`${REACT_APP_API_ROOT}/join_session`, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -201,7 +203,7 @@ function Game() {
   async function leaveSession(e) {
     e.preventDefault();
 
-    const response = await fetch("http://localhost:3001/api/leave_session", {
+    const response = await fetch(`${REACT_APP_API_ROOT}/leave_session`, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -224,7 +226,7 @@ function Game() {
   async function inviteMemberRSVP(e, memberId) {
     e.preventDefault();
 
-    const response = await fetch("http://localhost:3001/api/send_rsvp_invite", {
+    const response = await fetch(`${REACT_APP_API_ROOT}/send_rsvp_invite`, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -249,7 +251,7 @@ function Game() {
     e.preventDefault();
 
     const response = await fetch(
-      "http://localhost:3001/api/remove_session_member",
+      `${REACT_APP_API_ROOT}/remove_session_member`,
       {
         method: "POST",
         credentials: "include",
@@ -425,7 +427,7 @@ function Game() {
               delete_auth
                 ? async function () {
                     const response = await fetch(
-                      "http://localhost:3001/api/delete_message",
+                      `${REACT_APP_API_ROOT}/delete_message`,
                       {
                         method: "POST",
                         credentials: "include",

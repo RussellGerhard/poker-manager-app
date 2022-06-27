@@ -6,17 +6,16 @@ import Logo from "./Logo";
 import { Link, Navigate } from "react-router-dom";
 // Hooks
 import { useLocation, useNavigate } from "react-router-dom";
-import { useLayoutEffect, useState, useRef, useEffect } from "react";
+import { useLayoutEffect, useState, useEffect } from "react";
 import { useAuthContext } from "../contexts/AuthContext";
 import { useErrorContext } from "../contexts/ErrorContext";
 import { useAlertContext } from "../contexts/AlertContext";
+// Constants
+const { REACT_APP_API_ROOT } = process.env;
 
 function LogIn() {
   // Location state
   const { state } = useLocation();
-
-  // Refs
-  const emailInput = useRef();
 
   // State
   const [disableLogIn, setDisableLogIn] = useState(false);
@@ -42,7 +41,7 @@ function LogIn() {
     const password = e.target[1].value;
 
     // Send info to backend and await response
-    const response = await fetch("http://localhost:3001/api/login", {
+    const response = await fetch(`${REACT_APP_API_ROOT}/login`, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -77,10 +76,6 @@ function LogIn() {
   }
 
   // Effects
-  useEffect(() => {
-    emailInput.current.focus();
-  }, []);
-
   useLayoutEffect(() => {
     if (state) setAlert(state.alert);
     setErrors([]);
@@ -108,7 +103,7 @@ function LogIn() {
       <Form onSubmit={logUserIn} className="mt-4">
         <Form.Group className="mb-3" controlId="email">
           <Form.Label>Email Address</Form.Label>
-          <Form.Control ref={emailInput} type="email" placeholder="Email" />
+          <Form.Control type="email" placeholder="Email" />
         </Form.Group>
 
         <Form.Group controlId="password">

@@ -1,4 +1,7 @@
+// Hooks
 import { createContext, useContext, useEffect, useState, useMemo } from "react";
+// Constants
+const { REACT_APP_API_ROOT } = process.env;
 
 // get context
 const AuthContext = createContext(null);
@@ -29,11 +32,12 @@ const AuthContextProvider = ({ children }) => {
   // get user with API call
   useEffect(() => {
     async function loadUser() {
-      const response = await fetch(`http://localhost:3001/api/login`, {
+      const response = await fetch(`${REACT_APP_API_ROOT}/login`, {
         method: "GET",
         credentials: "include",
       });
       const res = await response.json();
+      console.log(res);
 
       if (res.loggedIn) {
         setUser(res.user);

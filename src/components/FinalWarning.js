@@ -7,6 +7,8 @@ import { useState, useLayoutEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuthContext } from "../contexts/AuthContext";
 import { useErrorContext } from "../contexts/ErrorContext";
+// Constants
+const { REACT_APP_API_ROOT } = process.env;
 
 function FinalWarning(props) {
   // State
@@ -27,7 +29,7 @@ function FinalWarning(props) {
     e.preventDefault();
     setDisableSubmit(true);
 
-    const response = await fetch(`http://localhost:3001/api/${endpoint}`, {
+    const response = await fetch(`${REACT_APP_API_ROOT}/${endpoint}`, {
       method: "POST",
       credentials: "include",
       headers: {

@@ -37,7 +37,6 @@ const AuthContextProvider = ({ children }) => {
         credentials: "include",
       });
       const res = await response.json();
-      console.log(res);
 
       if (res.loggedIn) {
         setUser(res.user);

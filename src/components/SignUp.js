@@ -5,7 +5,7 @@ import Form from "react-bootstrap/Form";
 import Logo from "./Logo";
 import { Navigate } from "react-router-dom";
 // Hooks
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuthContext } from "../contexts/AuthContext";
 import { useErrorContext } from "../contexts/ErrorContext";

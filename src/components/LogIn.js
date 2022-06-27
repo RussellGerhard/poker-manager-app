@@ -6,7 +6,7 @@ import Logo from "./Logo";
 import { Link, Navigate } from "react-router-dom";
 // Hooks
 import { useLocation, useNavigate } from "react-router-dom";
-import { useLayoutEffect, useState, useEffect } from "react";
+import { useLayoutEffect, useState } from "react";
 import { useAuthContext } from "../contexts/AuthContext";
 import { useErrorContext } from "../contexts/ErrorContext";
 import { useAlertContext } from "../contexts/AlertContext";

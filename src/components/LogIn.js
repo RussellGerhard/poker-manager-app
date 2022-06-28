@@ -40,8 +40,6 @@ function LogIn() {
     const email = e.target[0].value;
     const password = e.target[1].value;
 
-    console.log("here");
-
     // Send info to backend and await response
     const response = await fetch(`${REACT_APP_API_ROOT}/login`, {
       method: "POST",
@@ -55,12 +53,8 @@ function LogIn() {
       }),
     });
 
-    console.log(response);
-
     // Wait for response
     const res = await response.json();
-
-    console.log(res);
 
     // Re-enable login button
     setDisableLogIn(false);
@@ -70,6 +64,7 @@ function LogIn() {
       setErrors(res.errors);
     } else {
       setUser(res.user);
+      console.log("user set in login, res.user", res.user, "user: ", user);
       // Redirect to home
       // Replace login page in history stack
       navigate("/profile", {

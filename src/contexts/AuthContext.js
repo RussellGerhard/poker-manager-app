@@ -29,6 +29,8 @@ const AuthContextProvider = ({ children }) => {
     [loading, user, setUser]
   );
 
+  console.log("auth val", providerValue);
+
   // get user with API call
   useEffect(() => {
     async function loadUser() {

@@ -67,12 +67,12 @@ function LogIn() {
       console.log("user set in login, res.user", res.user, "user: ", user);
       // Redirect to home
       // Replace login page in history stack
-      navigate("/profile", {
-        state: {
-          alert: `Welcome back, ${res.user.username}!`,
-        },
-        replace: true,
-      });
+      // navigate("/profile", {
+      //   state: {
+      //     alert: `Welcome back, ${res.user.username}!`,
+      //   },
+      //   replace: true,
+      // });
     }
   }
 

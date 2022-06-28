@@ -19,7 +19,8 @@ function AlertErrorWrapper({ children }) {
 
   // Check for user session error first (so that private routes will catch on sess expiration)
   if (errors[0]?.param === "NoUserSession" && !loading) {
-    window.location.reload();
+    console.log("this is the problem");
+    //window.location.reload();
   }
 
   // Functions

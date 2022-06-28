@@ -77,7 +77,7 @@ function Home() {
               <Logo width="200" />
             </div>
             <h1>Home Game</h1>
-            <h3 className="mb-3">Your weekly poker session made easy</h3>
+            <p className="mb-3">Poker sessions made easy</p>
           </Container>
         </div>
         <div className="d-flex flex-row flex-wrap justify-content-around">

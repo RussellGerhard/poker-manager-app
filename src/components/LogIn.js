@@ -60,6 +60,8 @@ function LogIn() {
     // Wait for response
     const res = await response.json();
 
+    console.log(res);
+
     // Re-enable login button
     setDisableLogIn(false);
 

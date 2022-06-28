@@ -31,12 +31,14 @@ const AuthContextProvider = ({ children }) => {
 
   // get user with API call
   useEffect(() => {
+    console.log(`${REACT_APP_API_ROOT}/login`);
     async function loadUser() {
       const response = await fetch(`${REACT_APP_API_ROOT}/login`, {
         method: "GET",
         credentials: "include",
       });
       const res = await response.json();
+      console.log(res);
 
       if (res.loggedIn) {
         setUser(res.user);

@@ -89,7 +89,12 @@ function SignUp() {
   return (
     <Container className="my-3 p-3 w-360px bg-secondary bd-pink-fuzz rounded">
       <Logo width="150" />
-      <Form onSubmit={registerUser} className="mt-4">
+      <Form
+        onSubmit={(e) => {
+          registerUser(e);
+        }}
+        className="mt-4"
+      >
         <Form.Group className="mb-3" controlId="username">
           <Form.Label>Username</Form.Label>
           <Form.Control type="text" placeholder="Username" />

@@ -100,7 +100,12 @@ function LogIn() {
   return (
     <Container className="my-3 p-3 w-360px bg-secondary bd-pink-fuzz rounded">
       <Logo width="150" />
-      <Form onSubmit={logUserIn} className="mt-4">
+      <Form
+        onSubmit={(e) => {
+          logUserIn(e);
+        }}
+        className="mt-4"
+      >
         <Form.Group className="mb-3" controlId="email">
           <Form.Label>Email Address</Form.Label>
           <Form.Control type="email" placeholder="Email" />

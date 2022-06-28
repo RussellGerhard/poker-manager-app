@@ -87,7 +87,10 @@ function SignUp() {
 
   // Render
   return (
-    <Container className="my-3 p-3 w-360px bg-secondary bd-pink-fuzz rounded">
+    <Container
+      className="my-3 p-3 bg-secondary bd-pink-fuzz rounded"
+      style={{ maxWidth: "360px" }}
+    >
       <Logo width="150" />
       <Form
         onSubmit={(e) => {

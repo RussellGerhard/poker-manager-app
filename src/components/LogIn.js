@@ -40,6 +40,8 @@ function LogIn() {
     const email = e.target[0].value;
     const password = e.target[1].value;
 
+    console.log("here");
+
     // Send info to backend and await response
     const response = await fetch(`${REACT_APP_API_ROOT}/login`, {
       method: "POST",
@@ -52,6 +54,8 @@ function LogIn() {
         password,
       }),
     });
+
+    console.log(response);
 
     // Wait for response
     const res = await response.json();

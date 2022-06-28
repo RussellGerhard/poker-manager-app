@@ -36,19 +36,17 @@ const AuthContextProvider = ({ children }) => {
         method: "GET",
         credentials: "include",
       });
+
       const res = await response.json();
 
       if (res.loggedIn) {
         setUser(res.user);
       }
+
       setLoading(false);
     }
 
-    try {
-      loadUser();
-    } catch (err) {
-      console.log("NO SERVER RESPONSE");
-    }
+    loadUser();
   }, []);
 
   return (

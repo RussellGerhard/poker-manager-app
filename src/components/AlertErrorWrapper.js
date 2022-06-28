@@ -6,7 +6,6 @@ import Alert from "./Alert";
 import { useRef, useEffect } from "react";
 import { useErrorContext } from "../contexts/ErrorContext";
 import { useAlertContext } from "../contexts/AlertContext";
-import { useAuthContext } from "../contexts/AuthContext";
 
 function AlertErrorWrapper({ children }) {
   // Refs
@@ -15,12 +14,10 @@ function AlertErrorWrapper({ children }) {
   // Context
   const { errors, setErrors } = useErrorContext();
   const { alert, setAlert } = useAlertContext();
-  const { loading } = useAuthContext();
 
   // Check for user session error first (so that private routes will catch on sess expiration)
-  if (errors[0]?.param === "NoUserSession" && !loading) {
-    console.log("this is the problem");
-    //window.location.reload();
+  if (errors[0]?.param === "NoUserSession") {
+    window.location.reload();
   }
 
   // Functions

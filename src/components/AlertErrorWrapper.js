@@ -49,7 +49,7 @@ function AlertErrorWrapper({ children }) {
   ));
 
   return (
-    <div className="d-flex justify-content-center align-items-center cust-min-height">
+    <div className="mx-auto d-flex justify-content-center align-items-center cust-min-height">
       <div>
         <div ref={errorListStart}>{errorList}</div>
         {alert && (
